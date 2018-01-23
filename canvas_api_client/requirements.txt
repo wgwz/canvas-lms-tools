@@ -4,3 +4,6 @@ sphinx_rtd_theme
 nose
 coverage
 pypi-publisher
+
+# Library dependencies
+requests==2.13.0

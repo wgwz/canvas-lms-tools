@@ -28,7 +28,7 @@ Or clone the repo:
 Contributing
 ------------
 
-TBD
+This project is tested with python3, and additionally has mypy integration.
 
 Example
 -------
