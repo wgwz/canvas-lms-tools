@@ -30,14 +30,14 @@ class TestCanvasAPIv1Client(TestCase):
 
         url = 'https://foo.cc.columbia.edu/api/v1/search'
 
-        self.test_client._send_request(
+        returned_response = self.test_client._send_request(
             url,
             test_callback,
             exit_on_error=True,
             headers={'foo': 'bar'},
             params={'x': 'y'})
 
-        mock_response.raise_for_status.assert_called_once()
+        returned_response.raise_for_status.assert_called_once()
         test_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar', 'Authorization': 'Bearer foo_token'},
