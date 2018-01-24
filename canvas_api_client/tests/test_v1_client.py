@@ -24,6 +24,7 @@ class TestCanvasAPIv1Client(TestCase):
             'https://foo.cc.columbia.edu/api/v1/',
             'foo_token')
 
+    # TODO(lcary): https://github.com/lcary/canvas-lms-tools/issues/3
     @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
         "Skipping this test on Travis CI due to nonsensical error.")
     def test_send_request(self):
