@@ -1,11 +1,12 @@
-Welcome to Canvas LMS API Client Library's documentation!
-=========================================
+Canvas LMS API Client Library's documentation
+=============================================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
+   modules
 
 
 Indices and tables
