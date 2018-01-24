@@ -19,7 +19,8 @@ import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-sys.path.insert(0, os.path.abspath('../..'))
+# sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../canvas_api_client'))
 
 # -- General configuration ------------------------------------------------
 
@@ -49,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Canvas LMS API Client Library'
-copyright = '2016, Luc Cary'
+copyright = '2018, Luc Cary'
 author = 'Luc Cary'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -84,7 +85,7 @@ exclude_patterns = []
 #default_role = None
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
-#add_function_parentheses = True
+# add_function_parentheses = True
 
 # If true, the current module name will be prepended to all description
 # unit titles (such as .. function::).

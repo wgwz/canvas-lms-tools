@@ -12,10 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 # get the dependencies and installs
 with open(path.join(here, 'requirements.txt'), encoding='utf-8') as f:
-    all_reqs = f.read().split('\n')
-
-install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
-dependency_links = [x.strip().replace('git+', '') for x in all_reqs if x.startswith('git+')]
+    all_requirements = f.read().split('\n')
 
 setup(
     name='canvas_api_client',
@@ -23,7 +20,7 @@ setup(
     description='This is a library for making requests to a Canvas LMS API.',
     long_description=long_description,
     url='https://github.com/lcary/canvas_api_client',
-    download_url='https://github.com/lcary/canvas_api_client/tarball/' + __version__,
+    download_url='https://github.com/lcary/canvas_api_client/archive/' + __version__,
     license='BSD',
     classifiers=[
       'Development Status :: 3 - Alpha',
@@ -34,7 +31,7 @@ setup(
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
     author='Luc Cary',
-    install_requires=install_requires,
-    dependency_links=dependency_links,
+    install_requires=all_requirements,
+    dependency_links=all_requirements,
     author_email='luc.cary@gmail.com'
 )
