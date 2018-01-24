@@ -2,6 +2,7 @@ import logging
 import os
 from typing import (Any, Dict, Iterator)
 
+from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
 from canvas_api_client.types import (RequestHeaders,
     RequestParams,
@@ -10,13 +11,6 @@ from canvas_api_client.types import (RequestHeaders,
 import requests
 
 logger = logging.getLogger()
-
-
-class APIPaginationException(Exception):
-    """
-    Raise this exception if the response does not have pagination enabled.
-    """
-    pass
 
 
 class CanvasAPIv1(CanvasAPIClient):
