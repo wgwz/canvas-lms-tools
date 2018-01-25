@@ -16,6 +16,18 @@ def get_mock_response_with_pagination(url):
     return mock_response
 
 
+def _assert_request_called_once_with(mock_request_object, url, params=None):
+    """
+    Execute assert_called_once_with() on a unittest.mock object with default logic.
+    """
+    if params is None:
+        params = {}
+    mock_request_object.assert_called_once_with(
+        url,
+        params=params,
+        headers={'Authorization': 'Bearer foo_token'})
+
+
 class TestCanvasAPIv1Client(TestCase):
 
     @patch('canvas_api_client.v1_client.requests')
@@ -95,29 +107,47 @@ class TestCanvasAPIv1Client(TestCase):
         mock_requests.get.return_value = mock_response_1
 
         next(self.test_client.get_account_courses('1'))
-        mock_requests.get.assert_called_once_with(
-            url,
-            params={},
-            headers={'Authorization': 'Bearer foo_token'})
+        _assert_request_called_once_with(mock_requests.get, url)
 
     @patch('canvas_api_client.v1_client.requests')
     def test_get_course_users(self, mock_requests):
-        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:ASDFD5100_007_2018_1/users'
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/57000/users'
 
         mock_response_1 = get_mock_response_with_pagination(url)
         mock_requests.get.return_value = mock_response_1
 
-        next(self.test_client.get_course_users('ASDFD5100_007_2018_1'))
-        mock_requests.get.assert_called_once_with(
-            url,
-            params={},
-            headers={'Authorization': 'Bearer foo_token'})
+        next(self.test_client.get_course_users('57000'))
+        _assert_request_called_once_with(mock_requests.get, url)
+
+    @patch('canvas_api_client.v1_client.requests')
+    def test_get_sis_course_users(self, mock_requests):
+        course = 'ASDFD5100_007_2018_1'
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:{}/users'.format(course)
+
+        mock_response_1 = get_mock_response_with_pagination(url)
+        mock_requests.get.return_value = mock_response_1
+
+        generator = self.test_client.get_course_users(course, is_sis_course_id=True)
+        next(generator)
+        _assert_request_called_once_with(mock_requests.get, url)
 
     @patch('canvas_api_client.v1_client.requests')
     def test_delete_enrollment(self, mock_requests):
         self.test_client.delete_enrollment(1234, 432432)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
-        mock_requests.delete.assert_called_once_with(
-            url,
-            params={},
-            headers={'Authorization': 'Bearer foo_token'})
+        _assert_request_called_once_with(mock_requests.delete, url)
+
+    @patch('canvas_api_client.v1_client.requests')
+    def test_delete_enrollment_sis_course_id(self, mock_requests):
+        course = 'ASDFD5100_007_2018_2'
+        self.test_client.delete_enrollment(course, 432432, is_sis_course_id=True)
+        course_str = "sis_course_id:{}".format(course)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/enrollments/432432'.format(course_str)
+        _assert_request_called_once_with(mock_requests.delete, url)
+
+    @patch('canvas_api_client.v1_client.requests')
+    def test_delete_enrollment_delete_with_params(self, mock_requests):
+        params = {'task': 'delete'}
+        self.test_client.delete_enrollment(1234, 432432, params=params)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
+        _assert_request_called_once_with(mock_requests.delete, url, params=params)
