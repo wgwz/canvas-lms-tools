@@ -1,2 +1,2 @@
 # Library dependencies
-requests==2.13.0
+requests==2.18.1
