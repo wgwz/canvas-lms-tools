@@ -1,9 +1,7 @@
 from abc import (ABCMeta, abstractmethod)
 from typing import Iterator
 
-from canvas_api_client.types import (RequestHeaders,
-    RequestParams,
-    Response)
+from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
 
 
 class CanvasAPIClient(metaclass=ABCMeta):
@@ -14,33 +12,31 @@ class CanvasAPIClient(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def get_account_courses(
-            self,
-            account_id: str,
-            params: RequestParams = None) -> Iterator[Response]:
+    def get_account_courses(self,
+                            account_id: str,
+                            params: RequestParams = None
+                            ) -> Iterator[Response]:
         """
         Returns a generator of courses for a given account.
         """
         pass
 
     @abstractmethod
-    def get_course_users(
-            self,
-            course_id: str,
-            is_sis_course_id: bool = False,
-            params: RequestParams = None) -> Iterator[Response]:
+    def get_course_users(self,
+                         course_id: str,
+                         is_sis_course_id: bool = False,
+                         params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course.
         """
         pass
 
     @abstractmethod
-    def delete_enrollment(
-            self,
-            course_id: str,
-            enrollment_id: str,
-            is_sis_course_id: bool = False,
-            params: RequestParams = None) -> Response:
+    def delete_enrollment(self,
+                          course_id: str,
+                          enrollment_id: str,
+                          is_sis_course_id: bool = False,
+                          params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course.
         """

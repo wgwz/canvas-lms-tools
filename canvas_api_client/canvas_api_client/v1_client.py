@@ -4,9 +4,7 @@ from typing import (Any, Dict, Iterator)
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
-from canvas_api_client.types import (RequestHeaders,
-    RequestParams,
-    Response)
+from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
 
 import requests
 
@@ -28,20 +26,18 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def _get_url(self, endpoint: str) -> str:
         return "{base_url}{endpoint}".format(
-            base_url=self._api_url,
-            endpoint=endpoint)
+            base_url=self._api_url, endpoint=endpoint)
 
     def _add_bearer_token(self, headers: Dict[str, Any]):
         token_str = "Bearer {}".format(self._api_token)
         headers.update({'Authorization': token_str})
 
-    def _send_request(
-            self,
-            url: str,
-            callback,
-            exit_on_error: bool = True,
-            headers: RequestHeaders = None,
-            params: RequestParams = None) -> Response:
+    def _send_request(self,
+                      url: str,
+                      callback,
+                      exit_on_error: bool = True,
+                      headers: RequestHeaders = None,
+                      params: RequestParams = None) -> Response:
         """
         Sends an API call to the Canvas server via callback method.
 
@@ -66,33 +62,25 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return response
 
-    def _get(
-            self,
-            url: str,
-            headers: RequestHeaders = None,
-            params: RequestParams = None) -> Response:
+    def _get(self,
+             url: str,
+             headers: RequestHeaders = None,
+             params: RequestParams = None) -> Response:
         """
         Sends a GET request to the Canvas v1 API.
         """
         return self._send_request(
-            url,
-            requests.get,
-            headers=headers,
-            params=params)
+            url, requests.get, headers=headers, params=params)
 
-    def _delete(
-            self,
-            url: str,
-            headers: RequestHeaders = None,
-            params: RequestParams = None) -> Response:
+    def _delete(self,
+                url: str,
+                headers: RequestHeaders = None,
+                params: RequestParams = None) -> Response:
         """
         Sends a DELETE request to the Canvas v1 API.
         """
         return self._send_request(
-            url,
-            requests.delete,
-            headers=headers,
-            params=params)
+            url, requests.delete, headers=headers, params=params)
 
     def _check_response_headers_for_pagination(self, response: Response):
         """
@@ -106,11 +94,10 @@ class CanvasAPIv1(CanvasAPIClient):
                 "Canvas API did not return a response with pagination "
                 "for a request to {}".format(response.url))
 
-    def _get_paginated(
-            self,
-            url: str,
-            headers: RequestHeaders = None,
-            params: RequestParams = None) -> Iterator[Response]:
+    def _get_paginated(self,
+                       url: str,
+                       headers: RequestHeaders = None,
+                       params: RequestParams = None) -> Iterator[Response]:
         """
         Send an API call to the Canvas server with pagination.
 
@@ -123,8 +110,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
         while 'next' in response.links:
             response = self._get(
-                response.links['next']['url'],
-                headers=headers)
+                response.links['next']['url'], headers=headers)
             yield response.json()
 
     def _format_sis_course_id(self, course_id: str):
@@ -133,24 +119,24 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         return "sis_course_id:{}".format(course_id)
 
-    def get_account_courses(
-            self,
-            account_id: str,
-            params: RequestParams = None) -> Iterator[Response]:
+    def get_account_courses(self,
+                            account_id: str,
+                            params: RequestParams = None
+                            ) -> Iterator[Response]:
         """
         Returns a generator of courses for a given account from the v1 API.
 
         https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api
         """
-        endpoint = "accounts/{account_id}/courses".format(account_id=account_id)
+        endpoint = "accounts/{account_id}/courses".format(
+            account_id=account_id)
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
-    def get_course_users(
-            self,
-            course_id: str,
-            is_sis_course_id: bool = False,
-            params: RequestParams = None) -> Iterator[Response]:
+    def get_course_users(self,
+                         course_id: str,
+                         is_sis_course_id: bool = False,
+                         params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the v1 API.
 
@@ -163,12 +149,11 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
-    def delete_enrollment(
-            self,
-            course_id: str,
-            enrollment_id: str,
-            is_sis_course_id: bool = False,
-            params: RequestParams = None) -> Response:
+    def delete_enrollment(self,
+                          course_id: str,
+                          enrollment_id: str,
+                          is_sis_course_id: bool = False,
+                          params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course from the v1 API. Use with caution.
 
