@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -19,9 +19,9 @@ setup(
     version=__version__,
     description='This is a library for making requests to a Canvas LMS API.',
     long_description=long_description,
-    url='https://github.com/lcary/canvas_api_client',
-    download_url='https://github.com/lcary/canvas_api_client/archive/' + __version__,
-    license='BSD',
+    url='https://github.com/lcary/canvas-lms-tools',
+    download_url='https://github.com/lcary/canvas-lms-tools/archive/' + __version__,
+    license='Apache',
     classifiers=[
       'Development Status :: 3 - Alpha',
       'Intended Audience :: Developers',
