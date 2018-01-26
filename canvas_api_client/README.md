@@ -1,7 +1,7 @@
 Canvas LMS API Client Library
 =============================
 
-version number: 0.0.1
+version number: 0.1.0
 author: Luc Cary
 
 Overview

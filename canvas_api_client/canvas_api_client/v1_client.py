@@ -127,12 +127,20 @@ class CanvasAPIv1(CanvasAPIClient):
                 headers=headers)
             yield response.json()
 
+    def _format_sis_course_id(self, course_id: str):
+        """
+        Returns request string for querying with a SIS course ID.
+        """
+        return "sis_course_id:{}".format(course_id)
+
     def get_account_courses(
             self,
             account_id: str,
             params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of courses for a given account from the v1 API.
+
+        https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api
         """
         endpoint = "accounts/{account_id}/courses".format(account_id=account_id)
 
@@ -140,13 +148,18 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_course_users(
             self,
-            sis_course_id: str,
+            course_id: str,
+            is_sis_course_id: bool = False,
             params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the v1 API.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
-        endpoint = "courses/sis_course_id:{sis_course_id}/users".format(
-            sis_course_id=sis_course_id)
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+
+        endpoint = "courses/{}/users".format(course_id)
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
@@ -154,12 +167,16 @@ class CanvasAPIv1(CanvasAPIClient):
             self,
             course_id: str,
             enrollment_id: str,
+            is_sis_course_id: bool = False,
             params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course from the v1 API. Use with caution.
 
         https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy
         """
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+
         endpoint = "courses/{course_id}/enrollments/{id}".format(
             course_id=course_id, id=enrollment_id)
 

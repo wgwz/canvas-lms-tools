@@ -26,7 +26,8 @@ class CanvasAPIClient(metaclass=ABCMeta):
     @abstractmethod
     def get_course_users(
             self,
-            sis_course_id: str,
+            course_id: str,
+            is_sis_course_id: bool = False,
             params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course.
@@ -38,6 +39,7 @@ class CanvasAPIClient(metaclass=ABCMeta):
             self,
             course_id: str,
             enrollment_id: str,
+            is_sis_course_id: bool = False,
             params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course.
