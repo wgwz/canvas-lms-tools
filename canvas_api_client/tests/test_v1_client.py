@@ -10,9 +10,12 @@ from unittest.mock import MagicMock, patch
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
         headers={'link': url + 'page=1'},
-        links={'next': {'url': url + 'page=2'}})
-    mock_response.json.return_value = {
-        'value': 'first response'}
+        links={
+            'next': {
+                'url': url + 'page=2'
+            }
+        })
+    mock_response.json.return_value = {'value': 'first response'}
     return mock_response
 
 
@@ -23,22 +26,20 @@ def _assert_request_called_once_with(mock_request_object, url, params=None):
     if params is None:
         params = {}
     mock_request_object.assert_called_once_with(
-        url,
-        params=params,
-        headers={'Authorization': 'Bearer foo_token'})
+        url, params=params, headers={
+            'Authorization': 'Bearer foo_token'
+        })
 
 
 class TestCanvasAPIv1Client(TestCase):
-
     @patch('canvas_api_client.v1_client.requests')
     def setUp(self, mock_requests):
-        self.test_client = CanvasAPIv1(
-            'https://foo.cc.columbia.edu/api/v1/',
-            'foo_token')
+        self.test_client = CanvasAPIv1('https://foo.cc.columbia.edu/api/v1/',
+                                       'foo_token')
 
     # TODO(lcary): https://github.com/lcary/canvas-lms-tools/issues/3
     @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-        "Skipping this test on Travis CI due to nonsensical error.")
+            "Skipping this test on Travis CI due to nonsensical error.")
     def test_send_request(self):
         mock_requests = MagicMock()
         mock_response = MagicMock()
@@ -53,13 +54,18 @@ class TestCanvasAPIv1Client(TestCase):
             test_callback,
             exit_on_error=True,
             headers={'foo': 'bar'},
-            params={'x': 'y'})
+            params={
+                'x': 'y'
+            })
 
         returned_response.raise_for_status.assert_called_once()
         test_callback.assert_called_once_with(
             url,
-            headers={'foo': 'bar', 'Authorization': 'Bearer foo_token'},
-            params={'x': 'y'})
+            headers={'foo': 'bar',
+                     'Authorization': 'Bearer foo_token'},
+            params={
+                'x': 'y'
+            })
 
     @patch('canvas_api_client.v1_client.requests')
     def test_get_paginated_exception(self, mock_requests):
@@ -80,10 +86,8 @@ class TestCanvasAPIv1Client(TestCase):
 
         mock_response_1 = get_mock_response_with_pagination(url)
 
-        mock_response_2 = MagicMock(
-            headers={'link': url + 'page=2'})
-        mock_response_2.json.return_value = {
-            'value': 'second response'}
+        mock_response_2 = MagicMock(headers={'link': url + 'page=2'})
+        mock_response_2.json.return_value = {'value': 'second response'}
 
         mock_requests.get.side_effect = [mock_response_1, mock_response_2]
 
@@ -122,12 +126,14 @@ class TestCanvasAPIv1Client(TestCase):
     @patch('canvas_api_client.v1_client.requests')
     def test_get_sis_course_users(self, mock_requests):
         course = 'ASDFD5100_007_2018_1'
-        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:{}/users'.format(course)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:{}/users'.format(
+            course)
 
         mock_response_1 = get_mock_response_with_pagination(url)
         mock_requests.get.return_value = mock_response_1
 
-        generator = self.test_client.get_course_users(course, is_sis_course_id=True)
+        generator = self.test_client.get_course_users(
+            course, is_sis_course_id=True)
         next(generator)
         _assert_request_called_once_with(mock_requests.get, url)
 
@@ -140,9 +146,11 @@ class TestCanvasAPIv1Client(TestCase):
     @patch('canvas_api_client.v1_client.requests')
     def test_delete_enrollment_sis_course_id(self, mock_requests):
         course = 'ASDFD5100_007_2018_2'
-        self.test_client.delete_enrollment(course, 432432, is_sis_course_id=True)
+        self.test_client.delete_enrollment(
+            course, 432432, is_sis_course_id=True)
         course_str = "sis_course_id:{}".format(course)
-        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/enrollments/432432'.format(course_str)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/enrollments/432432'.format(
+            course_str)
         _assert_request_called_once_with(mock_requests.delete, url)
 
     @patch('canvas_api_client.v1_client.requests')
@@ -150,4 +158,5 @@ class TestCanvasAPIv1Client(TestCase):
         params = {'task': 'delete'}
         self.test_client.delete_enrollment(1234, 432432, params=params)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
-        _assert_request_called_once_with(mock_requests.delete, url, params=params)
+        _assert_request_called_once_with(
+            mock_requests.delete, url, params=params)

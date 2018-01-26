@@ -20,12 +20,13 @@ setup(
     description='This is a library for making requests to a Canvas LMS API.',
     long_description=long_description,
     url='https://github.com/lcary/canvas-lms-tools',
-    download_url='https://github.com/lcary/canvas-lms-tools/archive/' + __version__,
+    download_url='https://github.com/lcary/canvas-lms-tools/archive/' +
+    __version__,
     license='Apache',
     classifiers=[
-      'Development Status :: 3 - Alpha',
-      'Intended Audience :: Developers',
-      'Programming Language :: Python :: 3',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+        'Programming Language :: Python :: 3',
     ],
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
@@ -33,5 +34,4 @@ setup(
     author='Luc Cary',
     install_requires=all_requirements,
     dependency_links=all_requirements,
-    author_email='luc.cary@gmail.com'
-)
+    author_email='luc.cary@gmail.com')
