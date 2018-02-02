@@ -23,7 +23,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def __init__(self,
                  api_url: str,
                  api_token: Optional[str] = None,
-                 requests_lib: Any = requests) -> None:
+                 requests_lib: Optional[Any] = requests) -> None:
         """
         Creates a canvas API client given a base URL for the API, an optional
         API token, and an optional requests library.
