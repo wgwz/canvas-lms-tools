@@ -41,3 +41,12 @@ class CanvasAPIClient(metaclass=ABCMeta):
         Deletes an enrollment for a given course.
         """
         pass
+
+    @abstractmethod
+    def upload_sis_csv(self,
+                       csv_path: str,
+                       params: RequestParams = None) -> Response:
+        """
+        Uploads a CSV containing Student Information Services (SIS) changes.
+        """
+        pass

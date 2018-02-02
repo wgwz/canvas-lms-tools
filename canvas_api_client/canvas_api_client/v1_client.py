@@ -188,3 +188,17 @@ class CanvasAPIv1(CanvasAPIClient):
             course_id=course_id, id=enrollment_id)
 
         return self._delete(self._get_url(endpoint), params=params)
+
+    def upload_sis_csv(self,
+                       csv_filepath: str,
+                       params: RequestParams = None) -> Response:
+        """
+        https://canvas.instructure.com/doc/api/file.sis_csv.html
+        """
+        endpoint = "accounts/1/sis_imports.json?import_type=instructure_csv"  # should import_type be in params?
+        params = {"override_sis_stickiness": "true"}  # make this overridable
+        headers = {
+            'Content_Type': 'multipart/form-data',
+            'Content': {'attachment': csv_path}
+        }
+        return self._post(self._get_url(endpoint), params=params, headers=headers)
