@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import (Any, Dict, Iterator)
+from typing import (Any, Dict, Iterator, Optional)
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
@@ -20,28 +20,45 @@ class CanvasAPIv1(CanvasAPIClient):
     Create separate clients for other versions of the Canvas API.
     """
 
-    def __init__(self, api_url: str, api_token: str) -> None:
+    def __init__(self,
+                 api_url: str,
+                 api_token: Optional[str] = None,
+                 requests_lib: Optional[Any] = requests) -> None:
+        """
+        Creates a canvas API client given a base URL for the API, an optional
+        API token, and an optional requests library.
+
+        The optional requests library should be either the python HTTP requests
+        library or the equivalent (e.g. a Requests-OAuthlib session object).
+        """
         self._api_url = api_url
         self._api_token = api_token
+        self._requests_lib = requests_lib
 
     def _get_url(self, endpoint: str) -> str:
+        """
+        Formats a Canvas API URL from a given endpoint.
+        """
         return "{base_url}{endpoint}".format(
             base_url=self._api_url, endpoint=endpoint)
 
     def _add_bearer_token(self, headers: Dict[str, Any]):
+        """
+        Adds the authentication bearer token. Only run this if the token exists.
+        """
         token_str = "Bearer {}".format(self._api_token)
         headers.update({'Authorization': token_str})
 
     def _send_request(self,
-                      url: str,
                       callback,
+                      url: str,
                       exit_on_error: bool = True,
                       headers: RequestHeaders = None,
                       params: RequestParams = None) -> Response:
         """
         Sends an API call to the Canvas server via callback method.
 
-        The callback should be a requests.<func> function.
+        The callback should be a requests.<func> function or the equivalent.
 
         Note: since raise_for_status() will raise an exception for error
         codes, the user is responsible for catching requests.exceptions.HTTPError
@@ -52,7 +69,8 @@ class CanvasAPIv1(CanvasAPIClient):
         if params is None:
             params = {}
 
-        self._add_bearer_token(headers)
+        if self._api_token is not None:
+            self._add_bearer_token(headers)
 
         response = callback(url, headers=headers, params=params)
         if not response.ok:
@@ -62,25 +80,29 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return response
 
-    def _get(self,
-             url: str,
-             headers: RequestHeaders = None,
-             params: RequestParams = None) -> Response:
+    def _get(self, *args, **kwargs) -> Response:
         """
-        Sends a GET request to the Canvas v1 API.
+        Sends a GET request to the API.
         """
-        return self._send_request(
-            url, requests.get, headers=headers, params=params)
+        return self._send_request(self._requests_lib.get, *args, **kwargs)
 
-    def _delete(self,
-                url: str,
-                headers: RequestHeaders = None,
-                params: RequestParams = None) -> Response:
+    def _delete(self, *args, **kwargs) -> Response:
         """
-        Sends a DELETE request to the Canvas v1 API.
+        Sends a DELETE request to the API.
         """
-        return self._send_request(
-            url, requests.delete, headers=headers, params=params)
+        return self._send_request(self._requests_lib.delete, *args, **kwargs)
+
+    def _post(self, *args, **kwargs) -> Response:
+        """
+        Sends a POST request to the API.
+        """
+        return self._send_request(self._requests_lib.post, *args, **kwargs)
+
+    def _put(self, *args, **kwargs) -> Response:
+        """
+        Sends a PUT request to the API.
+        """
+        return self._send_request(self._requests_lib.put, *args, **kwargs)
 
     def _check_response_headers_for_pagination(self, response: Response):
         """
