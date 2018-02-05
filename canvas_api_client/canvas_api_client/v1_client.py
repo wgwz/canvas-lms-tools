@@ -54,7 +54,8 @@ class CanvasAPIv1(CanvasAPIClient):
                       url: str,
                       exit_on_error: bool = True,
                       headers: RequestHeaders = None,
-                      params: RequestParams = None) -> Response:
+                      params: RequestParams = None,
+                      **kwargs) -> Response:
         """
         Sends an API call to the Canvas server via callback method.
 
@@ -72,7 +73,7 @@ class CanvasAPIv1(CanvasAPIClient):
         if self._api_token is not None:
             self._add_bearer_token(headers)
 
-        response = callback(url, headers=headers, params=params)
+        response = callback(url, headers=headers, params=params, **kwargs)
         if not response.ok:
             logger.debug('Error status code for url "{}"'.format(response.url))
         if exit_on_error:
@@ -203,7 +204,7 @@ class CanvasAPIv1(CanvasAPIClient):
         endpoint = 'accounts/{}/sis_imports'.format(account_id)
         url = self._get_url(endpoint)
         files = {'file': data_file}
-        return self._requests_lib.post(url, params=params, files=files)
+        return self._post(url, params=params, files=files)
 
     def get_sis_import_status(self,
                               account_id: str,
