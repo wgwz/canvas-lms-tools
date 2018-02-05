@@ -203,8 +203,9 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         endpoint = 'accounts/{}/sis_imports'.format(account_id)
         url = self._get_url(endpoint)
-        files = {'file': data_file}
-        return self._post(url, params=params, files=files)
+        with open(data_file, 'rb') as f:
+            files = {'attachment': f}
+            return self._post(url, params=params, files=files)
 
     def get_sis_import_status(self,
                               account_id: str,
