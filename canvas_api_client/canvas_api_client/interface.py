@@ -43,10 +43,21 @@ class CanvasAPIClient(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def upload_sis_csv(self,
-                       csv_path: str,
-                       params: RequestParams = None) -> Response:
+    def import_sis_data(self,
+                        account_id: str,
+                        data_file: str,
+                        params: RequestParams = None) -> Response:
         """
         Uploads a CSV containing Student Information Services (SIS) changes.
+        """
+        pass
+
+    @abstractmethod
+    def get_sis_import_status(self,
+                              account_id: str,
+                              sis_import_id: str,
+                              params: RequestParams = None) -> Response:
+        """
+        Get the status of an already created SIS import.
         """
         pass

@@ -189,16 +189,30 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return self._delete(self._get_url(endpoint), params=params)
 
-    def upload_sis_csv(self,
-                       csv_filepath: str,
-                       params: RequestParams = None) -> Response:
+    def import_sis_data(self,
+                        account_id: str,
+                        data_file: str,
+                        params: RequestParams = None) -> Response:
         """
+        Import SIS data into Canvas. Must be on a root account with SIS imports enabled.
+
+        https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create
+
         https://canvas.instructure.com/doc/api/file.sis_csv.html
         """
-        endpoint = "accounts/1/sis_imports.json?import_type=instructure_csv"  # should import_type be in params?
-        params = {"override_sis_stickiness": "true"}  # make this overridable
-        headers = {
-            'Content_Type': 'multipart/form-data',
-            'Content': {'attachment': csv_path}
-        }
-        return self._post(self._get_url(endpoint), params=params, headers=headers)
+        endpoint = 'accounts/{}/sis_imports'.format(account_id)
+        url = self._get_url(endpoint)
+        files = {'file': data_file}
+        return self._requests_lib.post(url, params=params, files=files)
+
+    def get_sis_import_status(self,
+                              account_id: str,
+                              sis_import_id: str,
+                              params: RequestParams = None) -> Response:
+        """
+        Get the status of an already created SIS import.
+
+        https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show
+        """
+        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id, sis_import_id)
+        return self._get(self._get_url(endpoint), params=params)
