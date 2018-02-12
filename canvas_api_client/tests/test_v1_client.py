@@ -4,7 +4,7 @@ from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.errors import APIPaginationException
 
 from unittest import (skipIf, TestCase)
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, mock_open
 
 
 def get_mock_response_with_pagination(url):
@@ -19,7 +19,7 @@ def get_mock_response_with_pagination(url):
     return mock_response
 
 
-def _assert_request_called_once_with(mock_request_object, url, params=None):
+def _assert_request_called_once_with(mock_request_object, url, params=None, **kwargs):
     """
     Execute assert_called_once_with() on a unittest.mock object with default logic.
     """
@@ -28,7 +28,7 @@ def _assert_request_called_once_with(mock_request_object, url, params=None):
     mock_request_object.assert_called_once_with(
         url, params=params, headers={
             'Authorization': 'Bearer foo_token'
-        })
+        }, **kwargs)
 
 
 class TestCanvasAPIv1Client(TestCase):
@@ -153,3 +153,25 @@ class TestCanvasAPIv1Client(TestCase):
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
         _assert_request_called_once_with(
             self._mock_requests.delete, url, params=params)
+
+    def test_import_sis_data(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/1/sis_imports'
+        with patch('builtins.open', mock_open(read_data="foo")):
+            self.test_client.import_sis_data('1', 'foo.csv')
+            with open('foo.csv', 'rb') as f:
+                files = {'attachment': f}
+                _assert_request_called_once_with(
+                    self._mock_requests.post, url, params=None, files=files)
+
+    def test_import_sis_data_file_not_found(self):
+        m = mock_open()
+        m.side_effect = FileNotFoundError
+        with patch('builtins.open', m):
+            with self.assertRaises(FileNotFoundError):
+                self.test_client.import_sis_data('1', 'foo.csv')
+                assert not self._mock_requests.post.called
+
+    def test_get_sis_import_status(self):
+        self.test_client.get_sis_import_status('1', '14809')
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/1/sis_imports/14809'
+        _assert_request_called_once_with(self._mock_requests.get, url)

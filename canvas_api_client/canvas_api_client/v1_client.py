@@ -54,7 +54,8 @@ class CanvasAPIv1(CanvasAPIClient):
                       url: str,
                       exit_on_error: bool = True,
                       headers: RequestHeaders = None,
-                      params: RequestParams = None) -> Response:
+                      params: RequestParams = None,
+                      **kwargs) -> Response:
         """
         Sends an API call to the Canvas server via callback method.
 
@@ -72,7 +73,7 @@ class CanvasAPIv1(CanvasAPIClient):
         if self._api_token is not None:
             self._add_bearer_token(headers)
 
-        response = callback(url, headers=headers, params=params)
+        response = callback(url, headers=headers, params=params, **kwargs)
         if not response.ok:
             logger.debug('Error status code for url "{}"'.format(response.url))
         if exit_on_error:
@@ -188,3 +189,32 @@ class CanvasAPIv1(CanvasAPIClient):
             course_id=course_id, id=enrollment_id)
 
         return self._delete(self._get_url(endpoint), params=params)
+
+    def import_sis_data(self,
+                        account_id: str,
+                        data_file: str,
+                        params: RequestParams = None) -> Response:
+        """
+        Import SIS data into Canvas. Must be on a root account with SIS imports enabled.
+
+        https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create
+
+        https://canvas.instructure.com/doc/api/file.sis_csv.html
+        """
+        endpoint = 'accounts/{}/sis_imports'.format(account_id)
+        url = self._get_url(endpoint)
+        with open(data_file, 'rb') as f:
+            files = {'attachment': f}
+            return self._post(url, params=params, files=files)
+
+    def get_sis_import_status(self,
+                              account_id: str,
+                              sis_import_id: str,
+                              params: RequestParams = None) -> Response:
+        """
+        Get the status of an already created SIS import.
+
+        https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show
+        """
+        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id, sis_import_id)
+        return self._get(self._get_url(endpoint), params=params)
