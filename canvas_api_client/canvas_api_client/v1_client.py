@@ -142,6 +142,12 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         return "sis_course_id:{}".format(course_id)
 
+    def _format_sis_account_id(self, account_id: str):
+        """
+        Returns request string for querying with a SIS account ID.
+        """
+        return "sis_account_id:{}".format(account_id)
+
     def get_account_courses(self,
                             account_id: str,
                             params: RequestParams = None
@@ -218,3 +224,17 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         endpoint = 'accounts/{}/sis_imports/{}'.format(account_id, sis_import_id)
         return self._get(self._get_url(endpoint), params=params)
+
+    def get_account_roles(self,
+                          account_id: str,
+                          is_sis_account_id: bool = False,
+                          params: RequestParams = None) -> Response:
+        """
+        Get the roles for an existing account.
+
+        https://canvas.instructure.com/doc/api/roles.html#method.role_overrides.api_index
+        """
+        if is_sis_account_id:
+            account_id = self._format_sis_account_id(account_id)
+        endpoint = 'accounts/{}/roles'.format(account_id)
+        return self._get_paginated(self._get_url(endpoint), params=params)

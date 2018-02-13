@@ -61,3 +61,13 @@ class CanvasAPIClient(metaclass=ABCMeta):
         Get the status of an already created SIS import.
         """
         pass
+
+    @abstractmethod
+    def get_account_roles(self,
+                          account_id: str,
+                          is_sis_account_id: bool = False,
+                          params: RequestParams = None) -> Response:
+        """
+        Get the roles for an existing account.
+        """
+        pass
