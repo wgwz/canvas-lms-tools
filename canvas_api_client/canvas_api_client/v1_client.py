@@ -237,4 +237,4 @@ class CanvasAPIv1(CanvasAPIClient):
         if is_sis_account_id:
             account_id = self._format_sis_account_id(account_id)
         endpoint = 'accounts/{}/roles'.format(account_id)
-        return self._get_paginated(self._get_url(endpoint), params=params)
+        return self._get(self._get_url(endpoint), params=params)
