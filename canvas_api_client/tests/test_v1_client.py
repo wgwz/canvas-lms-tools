@@ -175,3 +175,13 @@ class TestCanvasAPIv1Client(TestCase):
         self.test_client.get_sis_import_status('1', '14809')
         url = 'https://foo.cc.columbia.edu/api/v1/accounts/1/sis_imports/14809'
         _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_account_roles(self):
+        self.test_client.get_account_roles('1')
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/1/roles'
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_account_roles_sis(self):
+        self.test_client.get_account_roles('ASDF', is_sis_account_id=True)
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
+        _assert_request_called_once_with(self._mock_requests.get, url)
