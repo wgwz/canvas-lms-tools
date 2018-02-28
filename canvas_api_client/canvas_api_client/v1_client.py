@@ -201,13 +201,12 @@ class CanvasAPIv1(CanvasAPIClient):
             url=url
             )
         data = {
-            'wiki_page': {
-                'title': title,
-                'body': body,
-                'notify_of_update': notify_of_update,
-                'published': published,
-                'front_page': front_page
-                }
+            'wiki_page[title]': title,
+            'wiki_page[body]': body,
+            'wiki_page[url]': url,
+            'wiki_page[notify_of_update]': notify_of_update,
+            'wiki_page[published]': published,
+            'wiki_page[front_page]': front_page
             }
 
         return self._put(self._get_url(endpoint), params=params, data=data)
