@@ -162,9 +162,9 @@ class TestCanvasAPIv1Client(TestCase):
         data = {
             'wiki_page[url]': url,
             'wiki_page[published]': True,
-            'wiki_page[front_page]': False,
             'wiki_page[notify_of_update]': False,
             'wiki_page[title]': title,
+            'wiki_page[front_page]': False,
             'wiki_page[body]': body
             }
 
@@ -181,7 +181,12 @@ class TestCanvasAPIv1Client(TestCase):
             url
             )
 
-        _assert_request_called_once_with(self._mock_requests.put, url, data)
+        _assert_request_called_once_with(
+            self._mock_requests.put,
+            url,
+            params={},
+            data=data
+            )
 
 
     def test_import_sis_data(self):
