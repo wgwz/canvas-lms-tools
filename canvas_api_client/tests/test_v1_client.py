@@ -159,6 +159,15 @@ class TestCanvasAPIv1Client(TestCase):
         url = 'test_page'
         title = 'Test Title'
         body = '<html><body><h1>Test Title</h1><p>Foo</p></body></html>'
+        data = {
+            'wiki_page[url]': url,
+            'wiki_page[published]': True,
+            'wiki_page[front_page]': False,
+            'wiki_page[notify_of_update]': False,
+            'wiki_page[title]': title,
+            'wiki_page[body]': body
+            }
+
         self.test_client.put_page(
             course,
             is_sis_course_id=True,
