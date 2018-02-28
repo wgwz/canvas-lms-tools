@@ -159,7 +159,7 @@ class TestCanvasAPIv1Client(TestCase):
         url = 'test_page'
         title = 'Test Title'
         body = '<html><body><h1>Test Title</h1><p>Foo</p></body></html>'
-        self.put_page(
+        self.test_client.put_page(
             course,
             is_sis_course_id=True,
             url=url,
