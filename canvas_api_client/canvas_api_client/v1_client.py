@@ -210,7 +210,7 @@ class CanvasAPIv1(CanvasAPIClient):
                 }
             }
 
-        return self._put(self.get_url(endpoint), params=params, data=data)
+        return self._put(self._get_url(endpoint), params=params, data=data)
 
     def delete_enrollment(self,
                           course_id: str,
