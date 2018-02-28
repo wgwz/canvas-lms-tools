@@ -47,11 +47,11 @@ class CanvasAPIClient(metaclass=ABCMeta):
                  course_id: str,
                  body: str,
                  is_sis_course_id: bool = False,
-                 url: str = None,
-                 title: str = None,
-                 notify_of_update: bool = False,
-                 published: bool = True,
-                 front_page: bool = False,
+                 url: Optional[str] = None,
+                 title: Optional[str] = None,
+                 notify_of_update: Optional[bool] = False,
+                 published: Optional[bool] = True,
+                 front_page: Optional[bool] = False,
                  params: RequestParams = None) -> Response:
         """
         Creates a new wiki page for a given course
