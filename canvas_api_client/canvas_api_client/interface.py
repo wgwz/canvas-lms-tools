@@ -43,6 +43,22 @@ class CanvasAPIClient(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def put_page(self,
+                 course_id: str,
+                 body: str,
+                 is_sis_course_id: bool = False,
+                 url: str = None,
+                 title: str = None,
+                 notify_of_update: bool = False,
+                 published: bool = True,
+                 front_page: bool = False,
+                 params: RequestParams = None) -> Response:
+        """
+        Creates a new wiki page for a given course
+        """
+        pass
+
+    @abstractmethod
     def import_sis_data(self,
                         account_id: str,
                         data_file: str,

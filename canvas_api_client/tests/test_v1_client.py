@@ -154,6 +154,27 @@ class TestCanvasAPIv1Client(TestCase):
         _assert_request_called_once_with(
             self._mock_requests.delete, url, params=params)
 
+    def test_put_page(self):
+        course = 'ASDFD5100_007_2018_2'
+        url = 'test_page'
+        title = 'Test Title'
+        body = '<html><body><h1>Test Title</h1><p>Foo</p></body></html>'
+        self.put_page(
+            course,
+            is_sis_course_id=True,
+            url=url,
+            title=title,
+            body=body
+            )
+        course_str = 'sis_course_id:{}'.format(course)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/pages/{}'.format(
+            course_str,
+            url
+            )
+
+        _assert_request_called_once_with(self._mock_requests.put, url, data)
+
+
     def test_import_sis_data(self):
         url = 'https://foo.cc.columbia.edu/api/v1/accounts/1/sis_imports'
         with patch('builtins.open', mock_open(read_data="foo")):
