@@ -10,9 +10,11 @@ Overview
 This is a library for making requests to a Canvas LMS API.
 
 Canvas LMS API documentation:
+
 https://canvas.instructure.com/doc/api/index.html
 
 This project was originally created with the following "cookiecutter" tool:
+
 https://github.com/wdm0006/cookiecutter-pipproject
 
 Installation / Usage
@@ -33,19 +35,37 @@ Contributing
 
 This project is tested with python3, and additionally has mypy integration.
 
+Note: before building, make sure to bump the `__version__` in the `setup.py` file.
+
+#### Building Wheels ####
+
 Building the wheel:
 
     pip install -r requirements.txt
     python setup.py bdist_wheel
+
+#### Installing Wheels ####
 
 How to install the client for testing:
 
     pip uninstall canvas_api_client || echo "Already uninstalled."
     pip install --no-index --find-links=dist canvas_api_client
 
-Publishing to pypi (requires `twine` to be installed):
+Alternatively, install by specifying the full or relative path to the `.whl` file:
+
+    pip install --no-index /path/to/canvas-lms-tools/canvas_api_client/dist/canvas_api_client-<version>-py2.py3-none-any.whl
+
+(You may need to `pip install wheel` first if you are installing from another 
+project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
+for more help.)
+
+#### Deploying Wheels ####
+
+Publishing to pypi (requires [twine](https://packaging.python.org/tutorials/distributing-packages/#requirements-for-packaging-and-distributing) to be installed):
 
     twine upload dist/canvas_api_client-<version>-py2.py3-none-any.whl
+
+#### Building Docs ####
 
 Creating the docs:
 
