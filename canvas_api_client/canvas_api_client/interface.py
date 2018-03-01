@@ -1,5 +1,5 @@
 from abc import (ABCMeta, abstractmethod)
-from typing import Iterator
+from typing import (Iterator, Optional)
 
 from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
 
