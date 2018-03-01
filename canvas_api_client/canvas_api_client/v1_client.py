@@ -178,6 +178,39 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
+    def put_page(self,
+                 course_id: str,
+                 body: str,
+                 is_sis_course_id: bool = False,
+                 url: Optional[str] = None,
+                 title: Optional[str] = None,
+                 notify_of_update: Optional[bool] = False,
+                 published: Optional[bool] = True,
+                 front_page: Optional[bool] = False,
+                 params: RequestParams = None) -> Response:
+        """
+        Creates a new wiki page using the v1 API
+        https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.create
+        Editing roles is not yet supported
+        """
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+
+        endpoint = "courses/{course_id}/pages/{url}".format(
+            course_id=course_id,
+            url=url
+            )
+        data = {
+            'wiki_page[title]': title,
+            'wiki_page[body]': body,
+            'wiki_page[url]': url,
+            'wiki_page[notify_of_update]': notify_of_update,
+            'wiki_page[published]': published,
+            'wiki_page[front_page]': front_page
+            }
+
+        return self._put(self._get_url(endpoint), params=params, data=data)
+
     def delete_enrollment(self,
                           course_id: str,
                           enrollment_id: str,

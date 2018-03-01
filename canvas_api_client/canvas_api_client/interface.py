@@ -1,5 +1,5 @@
 from abc import (ABCMeta, abstractmethod)
-from typing import Iterator
+from typing import (Iterator, Optional)
 
 from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
 
@@ -39,6 +39,22 @@ class CanvasAPIClient(metaclass=ABCMeta):
                           params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course.
+        """
+        pass
+
+    @abstractmethod
+    def put_page(self,
+                 course_id: str,
+                 body: str,
+                 is_sis_course_id: bool = False,
+                 url: Optional[str] = None,
+                 title: Optional[str] = None,
+                 notify_of_update: Optional[bool] = False,
+                 published: Optional[bool] = True,
+                 front_page: Optional[bool] = False,
+                 params: RequestParams = None) -> Response:
+        """
+        Creates a new wiki page for a given course
         """
         pass
 
