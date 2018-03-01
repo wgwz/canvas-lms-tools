@@ -5,6 +5,8 @@ Version number: 0.2
 
 Author: Luc Cary
 
+Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
+
 Overview
 --------
 
