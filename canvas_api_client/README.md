@@ -7,21 +7,30 @@ Author: Luc Cary
 
 Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
 
+#### Table of Contents
+[Overview](#overview)  
+[Documentation](#documentation)  
+[Installation](#installation)  
+[Usage](#usage)  
+[Contributing](#contributing)  
+[References](#references)  
+
 Overview
 --------
 
 This is a library for making requests to a Canvas LMS API.
 
-Canvas LMS API documentation:
+Documentation
+-------------
 
+This project has Sphinx documentation at the following url:  
+https://lcary.github.io/canvas-lms-tools/
+
+The public Canvas LMS API documentation is also very useful:  
 https://canvas.instructure.com/doc/api/index.html
 
-This project was originally created with the following "cookiecutter" tool:
-
-https://github.com/wdm0006/cookiecutter-pipproject
-
-Installation / Usage
---------------------
+Installation
+------------
 
 To install, use pip:
 
@@ -32,10 +41,13 @@ Or clone the repo:
     $ git clone https://github.com/lcary/canvas_api_client.git
     $ python setup.py install
 
+Usage
+-----
+
 Adding the client as a dependency in your project's `requirements.txt`
 file is the intended way to use the client.
 
-#### Using CanvasAPIv1 ####
+#### CanvasAPIv1
 
 This library is meant to be imported into your code. The `CanvasAPIv1` client
 object requires a `api_url` argument and a `api_token` argument. The `api_url`
@@ -59,53 +71,7 @@ library. This is not necessarily recommended; this capability only exists for
 the sake of easy dependency injection in unit testing as well as compatibility
 with libraries such as requests-oauthlib.
 
-See the examples section at the bottom for more info.
-
-Contributing
-------------
-
-This project is tested with python3, and additionally has mypy integration.
-
-Note: before building, make sure to bump the `__version__` in the `setup.py` file.
-
-#### Building Wheels ####
-
-Building the wheel:
-
-    python setup.py bdist_wheel
-
-#### Installing Wheels ####
-
-How to install the client for testing:
-
-    pip uninstall canvas_api_client || echo "Already uninstalled."
-    pip install --no-index --find-links=dist canvas_api_client
-
-Alternatively, install by specifying the full or relative path to the `.whl` file:
-
-    pip install --no-index /path/to/canvas-lms-tools/canvas_api_client/dist/canvas_api_client-<version>-py2.py3-none-any.whl
-
-(You may need to `pip install wheel` first if you are installing from another 
-project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
-for more help.)
-
-#### Deploying Wheels ####
-
-Publishing to pypi (requires [twine](https://packaging.python.org/tutorials/distributing-packages/#requirements-for-packaging-and-distributing) to be installed):
-
-    twine upload dist/canvas_api_client-<version>-py2.py3-none-any.whl
-
-#### Building Docs ####
-
-Creating the docs:
-
-    cd docs
-    pip install -r requirements.txt
-    make html
-    open build/html/index.html
-
-Example
--------
+#### Simple Example
 
 This very simple example requires a few environment variables. The
 API URL and token should be something like:
@@ -136,4 +102,71 @@ print('SIS Import Response:')
 pprint(response.json())
 ```
 
-Refer to the client interface documentation for more information.
+Refer to the client interface [documentation](#documentation) for more information.
+
+Contributing
+------------
+
+This project is tested with python3, and additionally has mypy integration.
+
+Note: before building, make sure to bump the `__version__` in the `setup.py` file.
+
+#### Building Wheels
+
+Building the wheel:
+
+    python setup.py bdist_wheel
+
+#### Installing Wheels
+
+How to install the client for testing:
+
+    pip uninstall canvas_api_client || echo "Already uninstalled."
+    pip install --no-index --find-links=dist canvas_api_client
+
+Alternatively, install by specifying the full or relative path to the `.whl` file:
+
+    pip install --no-index /path/to/canvas-lms-tools/canvas_api_client/dist/canvas_api_client-<version>-py2.py3-none-any.whl
+
+(You may need to `pip install wheel` first if you are installing from another 
+project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
+for more help.)
+
+#### Deploying Wheels
+
+Publishing to pypi (requires [twine](https://packaging.python.org/tutorials/distributing-packages/#requirements-for-packaging-and-distributing) to be installed):
+
+    twine upload dist/canvas_api_client-<version>-py2.py3-none-any.whl
+
+#### Sphinx Docs
+
+Creating the docs:
+
+    cd docs
+    pip install -r requirements.txt
+    make html
+    open build/html/index.html
+
+Deploying the docs to GitHub pages:
+
+    git checkout master
+    git pull
+    git checkout -b gh-pages
+    rm -rf ./*
+    touch .nojekyll
+    git checkout master canvas_api_client/docs/
+    < build the docs as above > 
+    mv canvas_api_client/docs/build/html/* ./
+    git add -A
+    git commit
+    git push origin gh-pages
+
+For more info see the [GitHub Pages documentation](https://pages.github.com/),
+the [Sphinx docs](http://www.sphinx-doc.org/en/master/contents.html),
+or the following [script docs](http://www.willmcginnis.com/2016/02/29/automating-documentation-workflow-with-sphinx-and-github-pages/).
+
+References
+----------
+
+This project was originally created with the following "cookiecutter" tool:  
+https://github.com/wdm0006/cookiecutter-pipproject
