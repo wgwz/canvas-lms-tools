@@ -34,12 +34,13 @@ Installation
 
 To install, use pip:
 
-    $ pip install canvas_api_client
+    pip install canvas_api_client
 
 Or clone the repo:
 
-    $ git clone https://github.com/lcary/canvas_api_client.git
-    $ python setup.py install
+    git clone https://github.com/lcary/canvas-lms-tools.git
+    cd canvas-lms-tools/canvas_api_client
+    python setup.py install
 
 Usage
 -----
