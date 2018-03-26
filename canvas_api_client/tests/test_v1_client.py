@@ -6,6 +6,8 @@ from canvas_api_client.errors import APIPaginationException
 from unittest import (skipIf, TestCase)
 from unittest.mock import MagicMock, patch, mock_open
 
+from requests import HTTPError
+
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -220,3 +222,28 @@ class TestCanvasAPIv1Client(TestCase):
         self.test_client.get_account_roles('ASDF', is_sis_account_id=True)
         url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
         _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_update_course(self):
+        self.test_client.update_course('ASDFD5100_007_2018_2', is_sis_course_id=True)
+        url = ('https://foo.cc.columbia.edu/api/v1/courses/'
+               'sis_course_id:ASDFD5100_007_2018_2')
+        _assert_request_called_once_with(self._mock_requests.put, url)
+
+    def test_update_course_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.update_course('ASDFD5100_007_2018_2',
+                is_sis_course_id=True)
+
+    def test_publish_course(self):
+        params = {'offer': 'true'}
+        self.test_client.publish_course('ASDFD5100_007_2018_2', is_sis_course_id=True)
+        url = ('https://foo.cc.columbia.edu/api/v1/courses/'
+               'sis_course_id:ASDFD5100_007_2018_2')
+        _assert_request_called_once_with(self._mock_requests.put, url, params=params)
+
+    def test_publish_course_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.publish_course('ASDFD5100_007_2018_2',
+                is_sis_course_id=True)

@@ -87,3 +87,23 @@ class CanvasAPIClient(metaclass=ABCMeta):
         Get the roles for an existing account.
         """
         pass
+
+    @abstractmethod
+    def update_course(self,
+                      course_id: str,
+                      is_sis_course_id: bool = False,
+                      params: RequestParams = None) -> Response:
+        """
+        Updates a given course.
+        """
+        pass
+
+    @abstractmethod
+    def publish_course(self,
+                       course_id: str,
+                       is_sis_course_id: bool = False,
+                       params: RequestParams = None) -> Response:
+        """
+        Publishes a given course.
+        """
+        pass
