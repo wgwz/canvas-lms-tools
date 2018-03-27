@@ -271,3 +271,32 @@ class CanvasAPIv1(CanvasAPIClient):
             account_id = self._format_sis_account_id(account_id)
         endpoint = 'accounts/{}/roles'.format(account_id)
         return self._get(self._get_url(endpoint), params=params)
+
+    def update_course(self,
+                      course_id: str,
+                      is_sis_course_id: bool = False,
+                      params: RequestParams = None) -> Response:
+        """
+        Updates a given course.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.update
+        """
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+        endpoint = 'courses/{}'.format(course_id)
+        return self._put(self._get_url(endpoint), params=params)
+
+    def publish_course(self,
+                       course_id: str,
+                       is_sis_course_id: bool = False,
+                       params: RequestParams = None) -> Response:
+        """
+        Publishes a given course.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.update
+        """
+        if params is None:
+            params = {}
+        params.update({'offer': 'true'})
+        return self.update_course(
+            course_id, is_sis_course_id=is_sis_course_id, params=params)
