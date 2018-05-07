@@ -1,6 +1,6 @@
 import logging
 import os
-from typing import (Any, Dict, Iterator, Optional)
+from typing import (Any, Dict, Iterator, List, Optional)
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
@@ -300,3 +300,22 @@ class CanvasAPIv1(CanvasAPIClient):
         params.update({'offer': 'true'})
         return self.update_course(
             course_id, is_sis_course_id=is_sis_course_id, params=params)
+
+    def associate_courses_to_blueprint(self,
+                                       course_id: str,
+                                       course_ids: List[str],
+                                       params: RequestParams = None
+                                       ) -> Response:
+        """Associate courses to a blueprint course
+
+        https://courseworks2.columbia.edu/doc/api/live#!/blueprint_courses.json
+
+        Args:
+            course_id: id of the blueprint course
+            course_ids: ids of courses to associate
+        """
+        endpoint = (
+            "courses/{course_id}/blueprint_templates/"
+            "default/update_associations").format(course_id=course_id)
+        data = {'course_ids_to_add[]': course_ids}
+        return self._put(self._get_url(endpoint), params=params, data=data)
