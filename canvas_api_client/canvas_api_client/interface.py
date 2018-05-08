@@ -1,5 +1,5 @@
 from abc import (ABCMeta, abstractmethod)
-from typing import (Iterator, Optional)
+from typing import (Iterator, List, Optional)
 
 from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
 
@@ -105,5 +105,16 @@ class CanvasAPIClient(metaclass=ABCMeta):
                        params: RequestParams = None) -> Response:
         """
         Publishes a given course.
+        """
+        pass
+
+    @abstractmethod
+    def associate_courses_to_blueprint(self,
+                                       course_id: str,
+                                       course_ids: List[str],
+                                       params: RequestParams = None
+                                       ) -> Response:
+        """
+        Associates courses to a given blueprint course.
         """
         pass
