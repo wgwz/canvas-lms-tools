@@ -9,6 +9,7 @@ Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
 
 #### Table of Contents
 [Overview](#overview)  
+[Testing](#testing)
 [Documentation](#documentation)  
 [Installation](#installation)  
 [Usage](#usage)  
@@ -19,6 +20,14 @@ Overview
 --------
 
 This is a library for making requests to a Canvas LMS API.
+
+Testing
+-------
+
+Run the tox command to run unit tests:
+```
+$ tox
+```
 
 Documentation
 -------------
