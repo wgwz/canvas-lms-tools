@@ -247,3 +247,32 @@ class TestCanvasAPIv1Client(TestCase):
         with self.assertRaises(HTTPError):
             self.test_client.publish_course('ASDFD5100_007_2018_2',
                 is_sis_course_id=True)
+
+    def test_associate_courses_to_blueprint(self):
+        course_id = '66642'
+        course_ids = ['66649', '66650', '66651', '66652', '66653']
+
+        self.test_client.associate_courses_to_blueprint(
+            course_id,
+            course_ids)
+
+        url = (
+            "https://foo.cc.columbia.edu/api/v1/"
+            "courses/{course_id}/blueprint_templates/"
+            "default/update_associations").format(course_id=course_id)
+        data = {
+            'course_ids_to_add[]': course_ids
+        }
+
+        _assert_request_called_once_with(
+            self._mock_requests.put,
+            url,
+            params={},
+            data=data)
+
+    def test_associate_courses_to_blueprint_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.associate_courses_to_blueprint(
+                'null',
+                [])
