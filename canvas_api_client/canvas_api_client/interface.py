@@ -118,3 +118,13 @@ class CanvasAPIClient(metaclass=ABCMeta):
         Associates courses to a given blueprint course.
         """
         pass
+
+    @abstractmethod
+    def get_account_blueprint_courses(self,
+                                      account_id: str,
+                                      params: RequestParams = None
+                                      ) -> Response:
+        """
+        Get all the blueprint courses in a given account
+        """
+        pass
