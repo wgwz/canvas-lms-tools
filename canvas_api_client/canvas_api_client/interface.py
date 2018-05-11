@@ -1,7 +1,7 @@
 from abc import (ABCMeta, abstractmethod)
 from typing import (Iterator, List, Optional)
 
-from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
+from canvas_api_client.types import (RequestParams, Response)
 
 
 class CanvasAPIClient(metaclass=ABCMeta):

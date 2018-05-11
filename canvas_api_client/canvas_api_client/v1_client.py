@@ -1,5 +1,4 @@
 import logging
-import os
 from typing import (Any, Dict, Iterator, List, Optional)
 
 from canvas_api_client.errors import APIPaginationException
@@ -44,7 +43,8 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def _add_bearer_token(self, headers: Dict[str, Any]):
         """
-        Adds the authentication bearer token. Only run this if the token exists.
+        Adds the authentication bearer token. Only run this if the token
+        exists.
         """
         token_str = "Bearer {}".format(self._api_token)
         headers.update({'Authorization': token_str})
@@ -62,7 +62,7 @@ class CanvasAPIv1(CanvasAPIClient):
         The callback should be a requests.<func> function or the equivalent.
 
         Note: since raise_for_status() will raise an exception for error
-        codes, the user is responsible for catching requests.exceptions.HTTPError
+        codes, the user is responsible for catching `HTTPError`
         exceptions unless they run with the exit_on_error set to False.
         """
         if headers is None:
@@ -167,7 +167,8 @@ class CanvasAPIv1(CanvasAPIClient):
                          is_sis_course_id: bool = False,
                          params: RequestParams = None) -> Iterator[Response]:
         """
-        Returns a generator of course enrollments for a given course from the v1 API.
+        Returns a generator of course enrollments for a given course from the
+        v1 Canvas API.
 
         https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
@@ -217,7 +218,8 @@ class CanvasAPIv1(CanvasAPIClient):
                           is_sis_course_id: bool = False,
                           params: RequestParams = None) -> Response:
         """
-        Deletes an enrollment for a given course from the v1 API. Use with caution.
+        Deletes an enrollment for a given course from the v1 API. Use with
+        caution.
 
         https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy
         """
@@ -234,7 +236,8 @@ class CanvasAPIv1(CanvasAPIClient):
                         data_file: str,
                         params: RequestParams = None) -> Response:
         """
-        Import SIS data into Canvas. Must be on a root account with SIS imports enabled.
+        Import SIS data into Canvas. Must be on a root account with SIS
+        imports enabled.
 
         https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create
 
@@ -255,7 +258,8 @@ class CanvasAPIv1(CanvasAPIClient):
 
         https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show
         """
-        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id, sis_import_id)
+        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id,
+                                                       sis_import_id)
         return self._get(self._get_url(endpoint), params=params)
 
     def get_account_roles(self,

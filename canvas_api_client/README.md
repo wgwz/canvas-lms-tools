@@ -29,6 +29,20 @@ Run the tox command to run unit tests:
 $ tox
 ```
 
+To create test coverage reports:
+```
+$ tox -e cov
+```
+
+Deployment
+----------
+
+Deployment to pypi is done with tox:
+```
+$ tox -e deploy
+```
+Make sure to bump the version in setup.py before deploying.
+
 Documentation
 -------------
 
@@ -141,12 +155,6 @@ Alternatively, install by specifying the full or relative path to the `.whl` fil
 (You may need to `pip install wheel` first if you are installing from another 
 project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
 for more help.)
-
-#### Deploying Wheels
-
-Publishing to pypi (requires [twine](https://packaging.python.org/tutorials/distributing-packages/#requirements-for-packaging-and-distributing) to be installed):
-
-    twine upload dist/canvas_api_client-<version>-py2.py3-none-any.whl
 
 #### Sphinx Docs
 
