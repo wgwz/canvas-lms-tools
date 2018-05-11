@@ -2,7 +2,7 @@ Canvas LMS API Client Library
 =============================
 
 [Overview](#overview)  
-[Testing](#testing)
+[Testing](#testing)  
 [Documentation](#documentation)  
 [Installation](#installation)  
 [Usage](#usage)  
