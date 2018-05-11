@@ -7,7 +7,7 @@ Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
 
 #### Table of Contents
 [Overview](#overview)  
-[Testing](#testing)
+[Testing](#testing)  
 [Documentation](#documentation)  
 [Installation](#installation)  
 [Usage](#usage)  
