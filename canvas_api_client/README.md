@@ -176,6 +176,7 @@ Creating the docs:
 
     cd docs
     pip install -r requirements.txt
+    pip install canvas_api_client
     make html
     open build/html/index.html
 
@@ -183,15 +184,17 @@ Deploying the docs to GitHub pages:
 
     git checkout master
     git pull
+    git branch -D gh-pages
     git checkout -b gh-pages
     rm -rf ./*
     touch .nojekyll
     git checkout master canvas_api_client/docs/
     < build the docs as above > 
     mv canvas_api_client/docs/build/html/* ./
+    rm -rf canvas_api_client
     git add -A
     git commit
-    git push origin gh-pages
+    git push -f origin gh-pages
 
 For more info see the [GitHub Pages documentation](https://pages.github.com/),
 the [Sphinx docs](http://www.sphinx-doc.org/en/master/contents.html),
