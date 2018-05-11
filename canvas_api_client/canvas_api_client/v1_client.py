@@ -1,9 +1,9 @@
 import logging
-from typing import (Any, Dict, Iterator, List, Optional)
+from typing import Any, Dict, Iterator, List, Optional
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
-from canvas_api_client.types import (RequestHeaders, RequestParams)
+from canvas_api_client.types import RequestHeaders, RequestParams
 
 import requests
 from requests import Response
