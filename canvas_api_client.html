@@ -1,0 +1,429 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>canvas_api_client package &mdash; Canvas LMS API Client Library 0.2.8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="canvas_api_client" href="modules.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> Canvas LMS API Client Library
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">canvas_api_client</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">canvas_api_client package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-canvas_api_client.errors">canvas_api_client.errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-canvas_api_client.interface">canvas_api_client.interface module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-canvas_api_client.types">canvas_api_client.types module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-canvas_api_client.v1_client">canvas_api_client.v1_client module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-canvas_api_client">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Canvas LMS API Client Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="modules.html">canvas_api_client</a> &raquo;</li>
+        
+      <li>canvas_api_client package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/canvas_api_client.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="canvas-api-client-package">
+<h1>canvas_api_client package<a class="headerlink" href="#canvas-api-client-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-canvas_api_client.errors">
+<span id="canvas-api-client-errors-module"></span><h2>canvas_api_client.errors module<a class="headerlink" href="#module-canvas_api_client.errors" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="canvas_api_client.errors.APIPaginationException">
+<em class="property">exception </em><code class="descclassname">canvas_api_client.errors.</code><code class="descname">APIPaginationException</code><a class="headerlink" href="#canvas_api_client.errors.APIPaginationException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raise this exception if the response does not have pagination enabled.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-canvas_api_client.interface">
+<span id="canvas-api-client-interface-module"></span><h2>canvas_api_client.interface module<a class="headerlink" href="#module-canvas_api_client.interface" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="canvas_api_client.interface.CanvasAPIClient">
+<em class="property">class </em><code class="descclassname">canvas_api_client.interface.</code><code class="descname">CanvasAPIClient</code><a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class (interface) for Canvas API Client subclasses.</p>
+<p>This interface is mostly used for mypy type-checking and python unit tests.</p>
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.associate_courses_to_blueprint">
+<code class="descname">associate_courses_to_blueprint</code><span class="sig-paren">(</span><em>course_id: str, course_ids: List[str], params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.associate_courses_to_blueprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associates courses to a given blueprint course.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.delete_enrollment">
+<code class="descname">delete_enrollment</code><span class="sig-paren">(</span><em>course_id: str, enrollment_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.delete_enrollment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes an enrollment for a given course.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.get_account_blueprint_courses">
+<code class="descname">get_account_blueprint_courses</code><span class="sig-paren">(</span><em>account_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.get_account_blueprint_courses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the blueprint courses in a given account</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.get_account_courses">
+<code class="descname">get_account_courses</code><span class="sig-paren">(</span><em>account_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Iterator[Any]<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.get_account_courses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator of courses for a given account.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.get_account_roles">
+<code class="descname">get_account_roles</code><span class="sig-paren">(</span><em>account_id: str, is_sis_account_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.get_account_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles for an existing account.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.get_course_users">
+<code class="descname">get_course_users</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Iterator[Any]<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.get_course_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator of course enrollments for a given course.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.get_sis_import_status">
+<code class="descname">get_sis_import_status</code><span class="sig-paren">(</span><em>account_id: str, sis_import_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.get_sis_import_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of an already created SIS import.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.import_sis_data">
+<code class="descname">import_sis_data</code><span class="sig-paren">(</span><em>account_id: str, data_file: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.import_sis_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uploads a CSV containing Student Information Services (SIS) changes.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.publish_course">
+<code class="descname">publish_course</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.publish_course" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publishes a given course.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.put_page">
+<code class="descname">put_page</code><span class="sig-paren">(</span><em>course_id: str, body: str, is_sis_course_id: bool = False, url: Union[str, NoneType] = None, title: Union[str, NoneType] = None, notify_of_update: Union[bool, NoneType] = False, published: Union[bool, NoneType] = True, front_page: Union[bool, NoneType] = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.put_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new wiki page for a given course</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.interface.CanvasAPIClient.update_course">
+<code class="descname">update_course</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.interface.CanvasAPIClient.update_course" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a given course.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-canvas_api_client.types">
+<span id="canvas-api-client-types-module"></span><h2>canvas_api_client.types module<a class="headerlink" href="#module-canvas_api_client.types" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-canvas_api_client.v1_client">
+<span id="canvas-api-client-v1-client-module"></span><h2>canvas_api_client.v1_client module<a class="headerlink" href="#module-canvas_api_client.v1_client" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1">
+<em class="property">class </em><code class="descclassname">canvas_api_client.v1_client.</code><code class="descname">CanvasAPIv1</code><span class="sig-paren">(</span><em>api_url: str</em>, <em>api_token: Union[str</em>, <em>NoneType] = None</em>, <em>requests_lib: Union[typing.Any</em>, <em>NoneType] = &lt;module 'requests' from '/Users/lc3326/work/acs/canvas-lms-tools/canvas_api_client/docs/venv/lib/python3.6/site-packages/requests/__init__.py'&gt;</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#canvas_api_client.interface.CanvasAPIClient" title="canvas_api_client.interface.CanvasAPIClient"><code class="xref py py-class docutils literal notranslate"><span class="pre">canvas_api_client.interface.CanvasAPIClient</span></code></a></p>
+<p>Canvas v1 API Client.</p>
+<p>This client can be used to make requests to the v1 Canvas API.</p>
+<p>Create separate clients for other versions of the Canvas API.</p>
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.associate_courses_to_blueprint">
+<code class="descname">associate_courses_to_blueprint</code><span class="sig-paren">(</span><em>course_id: str, course_ids: List[str], params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.associate_courses_to_blueprint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Associate courses to a blueprint course</p>
+<p><a class="reference external" href="https://courseworks2.columbia.edu/doc/api/live#!/blueprint_courses.json">https://courseworks2.columbia.edu/doc/api/live#!/blueprint_courses.json</a></p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>course_id: id of the blueprint course
+course_ids: ids of courses to associate</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.delete_enrollment">
+<code class="descname">delete_enrollment</code><span class="sig-paren">(</span><em>course_id: str, enrollment_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.delete_enrollment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes an enrollment for a given course from the v1 API. Use with
+caution.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy">https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.get_account_blueprint_courses">
+<code class="descname">get_account_blueprint_courses</code><span class="sig-paren">(</span><em>account_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.get_account_blueprint_courses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the blueprint courses in a given account</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api">https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.get_account_courses">
+<code class="descname">get_account_courses</code><span class="sig-paren">(</span><em>account_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Iterator[Any]<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.get_account_courses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator of courses for a given account from the v1 API.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api">https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.get_account_roles">
+<code class="descname">get_account_roles</code><span class="sig-paren">(</span><em>account_id: str, is_sis_account_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.get_account_roles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the roles for an existing account.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/roles.html#method.role_overrides.api_index">https://canvas.instructure.com/doc/api/roles.html#method.role_overrides.api_index</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.get_course_users">
+<code class="descname">get_course_users</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Iterator[Any]<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.get_course_users" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a generator of course enrollments for a given course from the
+v1 Canvas API.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/courses.html#method.courses.users">https://canvas.instructure.com/doc/api/courses.html#method.courses.users</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.get_sis_import_status">
+<code class="descname">get_sis_import_status</code><span class="sig-paren">(</span><em>account_id: str, sis_import_id: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.get_sis_import_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the status of an already created SIS import.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show">https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.import_sis_data">
+<code class="descname">import_sis_data</code><span class="sig-paren">(</span><em>account_id: str, data_file: str, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.import_sis_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Import SIS data into Canvas. Must be on a root account with SIS
+imports enabled.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create">https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create</a></p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/file.sis_csv.html">https://canvas.instructure.com/doc/api/file.sis_csv.html</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.publish_course">
+<code class="descname">publish_course</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.publish_course" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publishes a given course.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/courses.html#method.courses.update">https://canvas.instructure.com/doc/api/courses.html#method.courses.update</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.put_page">
+<code class="descname">put_page</code><span class="sig-paren">(</span><em>course_id: str, body: str, is_sis_course_id: bool = False, url: Union[str, NoneType] = None, title: Union[str, NoneType] = None, notify_of_update: Union[bool, NoneType] = False, published: Union[bool, NoneType] = True, front_page: Union[bool, NoneType] = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.put_page" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new wiki page using the v1 API
+<a class="reference external" href="https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.create">https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.create</a>
+Editing roles is not yet supported</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="canvas_api_client.v1_client.CanvasAPIv1.update_course">
+<code class="descname">update_course</code><span class="sig-paren">(</span><em>course_id: str, is_sis_course_id: bool = False, params: Union[typing.Dict[str, str], NoneType] = None</em><span class="sig-paren">)</span> &#x2192; Any<a class="headerlink" href="#canvas_api_client.v1_client.CanvasAPIv1.update_course" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates a given course.</p>
+<p><a class="reference external" href="https://canvas.instructure.com/doc/api/courses.html#method.courses.update">https://canvas.instructure.com/doc/api/courses.html#method.courses.update</a></p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-canvas_api_client">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-canvas_api_client" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="modules.html" class="btn btn-neutral" title="canvas_api_client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Luc Cary.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.2.8',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

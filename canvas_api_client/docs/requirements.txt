@@ -1,3 +1,0 @@
-# Dev/Deployment
-sphinx
-sphinx_rtd_theme
