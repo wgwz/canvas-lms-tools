@@ -276,3 +276,26 @@ class TestCanvasAPIv1Client(TestCase):
             self.test_client.associate_courses_to_blueprint(
                 'null',
                 [])
+
+    def test_get_account_blueprint_courses(self):
+        account_id = '115'
+
+        self.test_client.get_account_blueprint_courses(account_id)
+
+        url = (
+            "https://foo.cc.columbia.edu/api/v1/"
+            "accounts/{account_id}/courses").format(account_id=account_id)
+        params = {
+            'blueprint': 'true',
+            'include[]': ['subaccount', 'term']
+        }
+
+        _assert_request_called_once_with(
+            self._mock_requests.get,
+            url,
+            params=params)
+
+    def test_get_account_blueprint_courses_error(self):
+        self._mock_requests.get.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.get_account_blueprint_courses('null')

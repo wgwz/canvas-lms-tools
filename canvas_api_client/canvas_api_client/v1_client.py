@@ -319,3 +319,21 @@ class CanvasAPIv1(CanvasAPIClient):
             "default/update_associations").format(course_id=course_id)
         data = {'course_ids_to_add[]': course_ids}
         return self._put(self._get_url(endpoint), params=params, data=data)
+
+    def get_account_blueprint_courses(self,
+                                      account_id: str,
+                                      params: RequestParams = None
+                                      ) -> Response:
+        """Get all the blueprint courses in a given account
+
+        https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api
+        """
+        endpoint = "accounts/{account_id}/courses".format(
+            account_id=account_id)
+        if params is None:
+            params = {}
+        params.update({
+            'blueprint': 'true',
+            'include[]': ['subaccount', 'term']
+        })
+        return self._get(self._get_url(endpoint), params=params)
