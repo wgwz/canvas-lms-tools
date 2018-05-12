@@ -11,14 +11,14 @@ The import can be viewed by admins in the Canvas API, e.g. at:
 https://your_university_canvas.com/accounts/<id>/sis_import
 '''
 
-from argparse import ArgumentParser, Namespace, ArgumentDefaultsHelpFormatter
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import logging
 import pprint
 import time
-import re
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from canvas_api_client.interface import CanvasAPIClient
+from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.types import RequestParams
 
 from requests import Response
@@ -26,13 +26,17 @@ from requests import Response
 logger = logging.getLogger()
 
 DEFAULT_TIMEOUT_SECONDS = 60 * 60 * 2  # 2 hours
-COMPLETED_STATES = ('imported',
-                    'imported_with_messages',
-                    'failed',
+COMPLETED_STATES = ('imported', 'imported_with_messages', 'failed',
                     'failed_with_messages')
 
 # Python types
-SisImportResponse = Tuple[Response, List[List[str]], List[List[str]]]
+ResponseAndWarnings = Tuple[Response, List[List[str]], List[List[str]]]
+
+
+class SisImportError(Exception):
+    """
+    Raise if there is an error importing the users csv to canvas.
+    """
 
 
 class SisImportTimeoutError(Exception):
@@ -61,19 +65,19 @@ def _get_field(data: Dict[str, Any], key: str) -> Any:
             'See debug log for data.'.format(key))
 
 
-def is_import_complete(api_client: CanvasAPIClient,
-                       account_id: str,
+def is_import_complete(api_client: CanvasAPIClient, account_id: str,
                        sis_import_id: str) -> bool:
     """
     Check if the import is complete. Returns a boolean, true if imported.
     """
-    import_response = api_client.get_sis_import_status(account_id, sis_import_id).json()
+    import_response = api_client.get_sis_import_status(account_id,
+                                                       sis_import_id).json()
     progress = _get_field(import_response, 'progress')
     logger.info('SIS import progress: {}% complete'.format(progress))
     return _get_field(import_response, 'workflow_state') in COMPLETED_STATES
 
 
-def _check_elapsed_time(start_seconds: int, timeout: int) -> None:
+def _check_elapsed_time(start_seconds: float, timeout: int) -> None:
     """
     Check the elapsed time since the beginning of a SIS import.
 
@@ -81,8 +85,8 @@ def _check_elapsed_time(start_seconds: int, timeout: int) -> None:
     """
     elapsed_seconds = time.time() - start_seconds
     if elapsed_seconds > timeout:
-        msg = 'SIS Import took {} seconds. Max allowed import time is {} seconds.'
-        msg = msg.format(elapsed_seconds, timeout)
+        msg = ('SIS Import took {} seconds. Max allowed import time '
+               'is {} seconds.').format(elapsed_seconds, timeout)
         raise SisImportTimeoutError(msg)
 
 
@@ -109,27 +113,29 @@ def _wait_for_completion(api_client: CanvasAPIClient,
 def _log_message(logger_func: Callable[[str], None],
                  message_list: List[Tuple[str, str]]) -> List[str]:
     """
-    Call a logger function on each message in a message list and return the messages.
+    Call a logger function on each message in a message list and return the
+    messages.
     """
     messages = []
     for filename, message in message_list:
-        logger_func("Below warning occurred while importing file {}".format(filename))
+        logger_func(
+            "Below warning occurred while importing file {}".format(filename))
         logger_func(message)
         messages.append(message)
     return messages
 
 
-def _log_sis_errors(api_client: CanvasAPIClient,
-                    account_id: str,
-                    sis_import_id: str) -> SisImportResponse:
+def _log_sis_errors(api_client: CanvasAPIClient, account_id: str,
+                    sis_import_id: str) -> ResponseAndWarnings:
     """
     Log warnings and errors that occurred during the SIS import.
     """
 
-    sis_import = api_client.get_sis_import_status(account_id, sis_import_id).json()
+    sis_import = api_client.get_sis_import_status(account_id,
+                                                  sis_import_id).json()
 
-    warnings = []
-    errors = []
+    warnings = []  # type: ignore
+    errors = []  # type: ignore
 
     if 'processing_warnings' in sis_import:
         warnings = _log_message(logger.warn, sis_import['processing_warnings'])
@@ -144,15 +150,19 @@ def _import_sis_csv(api_client: CanvasAPIClient,
                     csv_filepath: str,
                     timeout: Optional[int] = None,
                     request_params: RequestParams = None,
-                    wait_for_completion: bool = True) -> SisImportResponse:
+                    wait_for_completion: bool = True) -> ResponseAndWarnings:
     """
-    Import a SIS CSV file to the Canvas API. Check the status to ensure it completes successfully.
+    Import a SIS CSV file to the Canvas API. Check the status to
+    ensure it completes successfully.
     """
     if request_params is None:
-        request_params = {'import_type': 'instructure_csv',
-                          'override_sis_stickiness': 'true'}
+        request_params = {
+            'import_type': 'instructure_csv',
+            'override_sis_stickiness': 'true'
+        }
 
-    sis_import = api_client.import_sis_data(account_id, csv_filepath, params=request_params).json()
+    sis_import = api_client.import_sis_data(
+        account_id, csv_filepath, params=request_params).json()
 
     if 'errors' in sis_import:
         for messages in sis_import.get('errors', []):
@@ -160,18 +170,14 @@ def _import_sis_csv(api_client: CanvasAPIClient,
 
     sis_import_id = _get_field(sis_import, 'id')
 
-    logger.info('Importing {}. SIS import id: #{}'.format(csv_filepath, sis_import_id))
+    logger.info('Importing {}. SIS import id: #{}'.format(
+        csv_filepath, sis_import_id))
     if wait_for_completion:
-        _wait_for_completion(api_client, account_id, sis_import_id, timeout=timeout)
+        _wait_for_completion(
+            api_client, account_id, sis_import_id, timeout=timeout)
         logger.info('SIS import #{} 100% complete.'.format(sis_import_id))
 
     return _log_sis_errors(api_client, account_id, sis_import_id)
-
-
-class SisImportError(Exception):
-    """
-    Raise if there is an error importing the users csv to canvas.
-    """
 
 
 class SisImport(object):
@@ -181,29 +187,31 @@ class SisImport(object):
 
     def __init__(self,
                  api_client: CanvasAPIClient,
-                 account_id: int,
+                 account_id: str,
                  timeout: Optional[int] = DEFAULT_TIMEOUT_SECONDS,
                  dryrun: bool = False,
                  wait_for_completion: bool = False) -> None:
         self._api_client = api_client
         self._account_id = account_id
-        self._warnings = dict()
-        self._errors = dict()
+        self._warnings = dict()  # type: ignore
+        self._errors = dict()  # type: ignore
         self._timeout = timeout
         self._dryrun = dryrun
         self._wait_for_completion = wait_for_completion
 
-    def import_csv(self, csv_path: str) -> SisImportResponse:
+    def import_csv(self, csv_path: str) -> Optional[Response]:
         """
         Import a CSV file to the Canvas API via SIS CSV Import.
         """
         if self._dryrun:
             warning = 'Not importing {} since running in dryrun mode!'
             logger.warn(warning.format(csv_path))
-            import_response, warnings, errors = (None, [], [])
+            import_response, warnings, errors = (None, [], [])  # type: ignore
         else:
             import_response, warnings, errors = _import_sis_csv(
-                self._api_client, self._account_id, csv_path,
+                self._api_client,
+                self._account_id,
+                csv_path,
                 timeout=self._timeout,
                 wait_for_completion=self._wait_for_completion)
         logger.debug('SIS Import Response JSON:')
@@ -219,8 +227,9 @@ class SisImport(object):
         found_error = False
         for filepath, errors in self._errors.items():
             if errors:
-                msg = 'Errors occurred during Canvas SIS CSV Import of file {}: {}'
-                logger.error(msg.format(filepath, errors))
+                logger.error((
+                    'Errors occurred during Canvas SIS CSV '
+                    'Import of file {}: {}').format(filepath, errors))
                 found_error = True
         if found_error and exit_on_error:
             raise SisImportError('At least one Canvas SIS CSV Import failed.')
@@ -228,8 +237,7 @@ class SisImport(object):
 
 def main():
     parser = ArgumentParser(
-        description=__doc__,
-        formatter_class=ArgumentDefaultsHelpFormatter)
+        description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         'csv_path',
         help='Set path for incremental diff of data to send to canvas')
@@ -241,7 +249,8 @@ def main():
         '--dryrun',
         default=False,
         action='store_true',
-        help='Run the SIS Import task in dryrun mode, so no Canvas API uploads.')
+        help='Run the SIS Import without uploading to Canvas.'
+    )
     parser.add_argument(
         '--timeout-seconds',
         type=int,
@@ -251,12 +260,12 @@ def main():
     args = parser.parse_args()
 
     api_client = CanvasAPIv1(
-        raw_input('Canvas API URL: '),
-        raw_input('Canvas API Token: '))
+        input('Canvas API URL: '), input('Canvas API Token: '))
 
     sis_import = SisImport(api_client, args.account_id, dryrun=args.dryrun)
     sis_import.import_csv(args.csv_path)
     sis_import.check_errors()
 
-if __name__ = '__main__':
+
+if __name__ == '__main__':
     main()

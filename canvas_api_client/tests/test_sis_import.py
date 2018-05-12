@@ -23,21 +23,18 @@ class TestSisImportFunctions(TestCase):
             sis_import._get_field({'foo': 'bar'}, 'baz')
 
     def test_import_complete(self):
-        sis_import = {'progress': 100,
-                      'workflow_state': 'imported'}
-        api_client = mock_get_sis_import_status([sis_import])
+        response = {'progress': 100, 'workflow_state': 'imported'}
+        api_client = mock_get_sis_import_status([response])
         assert sis_import.is_import_complete(api_client, '1', '14589')
 
     def test_import_failed(self):
-        sis_import = {'progress': 100,
-                      'workflow_state': 'failed'}
-        api_client = mock_get_sis_import_status([sis_import])
+        response = {'progress': 100, 'workflow_state': 'failed'}
+        api_client = mock_get_sis_import_status([response])
         assert sis_import.is_import_complete(api_client, '1', '14589')
 
     def test_import_incomplete(self):
-        sis_import = {'progress': 50,
-                      'workflow_state': 'importing'}
-        api_client = mock_get_sis_import_status([sis_import])
+        response = {'progress': 50, 'workflow_state': 'importing'}
+        api_client = mock_get_sis_import_status([response])
         assert not sis_import.is_import_complete(api_client, '1', '14589')
 
     @patch('time.sleep', return_value=None)
@@ -49,15 +46,13 @@ class TestSisImportFunctions(TestCase):
             1517933032.93932,  # time.time() called by 1st while-loop iteration
             1517933062.93932   # time.time() called by 2nd while-loop iteration
         ]
-        sis_import_1 = {'progress': 50,
-                        'workflow_state': 'importing'}
-        sis_import_2 = {'progress': 100,
-                        'workflow_state': 'imported'}
-        api_client = mock_get_sis_import_status([sis_import_1, sis_import_2])
+        response1 = {'progress': 50, 'workflow_state': 'importing'}
+        response2 = {'progress': 100, 'workflow_state': 'imported'}
+        api_client = mock_get_sis_import_status([response1, response2])
         try:
             sis_import._wait_for_completion(api_client, '1', '14589')
-        except sis_import.SubmitTimeoutError:
-            self.fail("_wait_for_completion() raised SubmitTimeoutError unexpectedly.")
+        except sis_import.SisImportTimeoutError:
+            self.fail("_wait_for_completion() raised SisImportTimeoutError unexpectedly.")
 
     @patch('time.sleep', return_value=None)
     @patch('time.time')
@@ -67,12 +62,12 @@ class TestSisImportFunctions(TestCase):
             1617933032.93932,  # time.time() called by log function
             1717933032.93932   # time.time() called by 1st while-loop iteration. Too high!
         ]
-        sis_import_1 = {'progress': 50,
+        response1 = {'progress': 50,
                         'workflow_state': 'importing'}
-        sis_import_2 = {'progress': 50,
+        response2 = {'progress': 50,
                         'workflow_state': 'importing'}
-        api_client = mock_get_sis_import_status([sis_import_1, sis_import_2])
-        with self.assertRaises(sis_import.SubmitTimeoutError):
+        api_client = mock_get_sis_import_status([response1, response2])
+        with self.assertRaises(sis_import.SisImportTimeoutError):
             sis_import._wait_for_completion(api_client, '1', '14589',
                 sis_import.DEFAULT_TIMEOUT_SECONDS)
 
@@ -81,14 +76,14 @@ class TestSisImportFunctions(TestCase):
             "user John Doe has already claimed john_doe's requested login information, skipping"]]
         processing_errors = [["students.csv",
             "Error while importing CSV. Please contact support."]]
-        sis_import = {'progress': 100,
+        sis_import_response = {'progress': 100,
                       'workflow_state': 'imported',
                       'processing_warnings': processing_warnings,
                       'processing_errors': processing_errors}
-        api_client = mock_get_sis_import_status([sis_import])
+        api_client = mock_get_sis_import_status([sis_import_response])
         (response, warnings, errors) = sis_import._log_sis_errors(
             api_client, '1', '14589')
-        self.assertEqual(response, sis_import)
+        self.assertEqual(response, sis_import_response)
         self.assertEqual(warnings, [processing_warnings[0][1]])
         self.assertEqual(errors, [processing_errors[0][1]])
 
@@ -103,23 +98,18 @@ class TestSisImportFunctions(TestCase):
             1517933032.93932,  # time.time() called by 1st while-loop iteration
             1517933062.93932   # time.time() called by 2nd while-loop iteration
         ]
-        sis_import_1 = {'progress': 50,
-                        'workflow_state': 'importing'}
-        sis_import_2 = {'progress': 100,
-                        'workflow_state': 'imported'}
-        sis_import_3 = {'progress': 100,
-                        'workflow_state': 'imported'}
-        api_client = mock_get_sis_import_status([sis_import_1, sis_import_2, sis_import_3])
-        sis_import_0 = {'id': 13012,
-                        'progress': 0,
-                        'workflow_state': 'created'}
+        response0 = {'id': 13012, 'progress': 0, 'workflow_state': 'created'}
+        response1 = {'progress': 50, 'workflow_state': 'importing'}
+        response2 = {'progress': 100, 'workflow_state': 'imported'}
+        response3 = {'progress': 100, 'workflow_state': 'imported'}
+        api_client = mock_get_sis_import_status([response1, response2, response3])
         import_response = MagicMock()
-        import_response.json.return_value = sis_import_0
+        import_response.json.return_value = response0
         api_client.import_sis_data.return_value = import_response
 
         (import_response, warnings, errors) = sis_import._import_sis_csv(
             api_client, '1', 'foo.csv')
-        self.assertEqual((import_response, warnings, errors), (sis_import_3, [], []))
+        self.assertEqual((import_response, warnings, errors), (response3, [], []))
 
 
 class TestSisImportClass(TestCase):
@@ -144,15 +134,14 @@ class TestSisImportClass(TestCase):
         self.assertDictEqual(self.sis_import._warnings, {})
         self.assertEqual(self.sis_import._timeout, timeout)
         self.assertFalse(self.sis_import._dryrun)
-        self.assertFalse(self.sis_import._statsd_enabled)
 
-    def test_submit_dryrun_check_stored_data(self):
+    def test_dryrun_check_stored_data(self):
         self.sis_import._dryrun = True
         self.sis_import.import_csv(DEFAULT_CSV)
         self.assertDictEqual(self.sis_import._warnings, {DEFAULT_CSV: []})
         self.assertDictEqual(self.sis_import._errors, {DEFAULT_CSV: []})
 
-    def test_submit_check_stored_data(self):
+    def test_check_stored_data(self):
         self._mock_sis_import_response()
         self.sis_import.import_csv(DEFAULT_CSV)
         self.assertDictEqual(self.sis_import._warnings, {DEFAULT_CSV: []})

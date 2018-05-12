@@ -1,7 +1,7 @@
 '''
 Helper functions for running unit tests.
 '''
-from uniitest.mock import MagicMock
+from unittest.mock import MagicMock
 
 
 def mock_get_sis_import_status(sis_imports):
@@ -22,6 +22,7 @@ def get_import_complete_status():
     return {'id': 13012,
             'progress': 100,
             'workflow_state': 'imported'}
+
 
 def get_response_data_counts():
     return {
