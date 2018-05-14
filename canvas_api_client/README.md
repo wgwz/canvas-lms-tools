@@ -1,11 +1,6 @@
 Canvas LMS API Client Library
 =============================
 
-Version number: 0.2  
-Author: Luc Cary  
-Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
-
-#### Table of Contents
 [Overview](#overview)  
 [Testing](#testing)  
 [Documentation](#documentation)  
@@ -22,10 +17,18 @@ This is a library for making requests to a Canvas LMS API.
 Testing
 -------
 
-Run the tox command to run unit tests:
+This project is tested with [tox](https://tox.readthedocs.io/en/latest/).
+
+Run the tox command to run checks and unit tests:
 ```
 $ tox
 ```
+
+By default, this project's tox runs:
+
+ * [flake8](http://flake8.pycqa.org/en/latest/)
+ * [mypy](https://github.com/python/mypy)
+ * [pytest](https://docs.pytest.org/en/latest/)
 
 To create test coverage reports:
 ```
@@ -144,10 +147,6 @@ Refer to the client interface [documentation](#documentation) for more informati
 
 Contributing
 ------------
-
-This project is tested with python3, and additionally has mypy integration.
-
-Note: before building, make sure to bump the `__version__` in the `setup.py` file.
 
 #### Building Wheels
 
