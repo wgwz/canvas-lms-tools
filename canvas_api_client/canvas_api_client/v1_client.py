@@ -1,11 +1,12 @@
 import logging
-from typing import (Any, Dict, Iterator, List, Optional)
+from typing import Any, Dict, Iterator, List, Optional
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
-from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
+from canvas_api_client.types import RequestHeaders, RequestParams
 
 import requests
+from requests import Response
 
 logger = logging.getLogger()
 
@@ -85,25 +86,29 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         Sends a GET request to the API.
         """
-        return self._send_request(self._requests_lib.get, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.get, *args, **kwargs)  # type: ignore
 
     def _delete(self, *args, **kwargs) -> Response:
         """
         Sends a DELETE request to the API.
         """
-        return self._send_request(self._requests_lib.delete, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.delete, *args, **kwargs)  # type: ignore
 
     def _post(self, *args, **kwargs) -> Response:
         """
         Sends a POST request to the API.
         """
-        return self._send_request(self._requests_lib.post, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.post, *args, **kwargs)  # type: ignore
 
     def _put(self, *args, **kwargs) -> Response:
         """
         Sends a PUT request to the API.
         """
-        return self._send_request(self._requests_lib.put, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.put, *args, **kwargs)  # type: ignore
 
     def _check_response_headers_for_pagination(self, response: Response):
         """

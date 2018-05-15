@@ -1,7 +1,9 @@
-from abc import (ABCMeta, abstractmethod)
-from typing import (Iterator, List, Optional)
+from abc import ABCMeta, abstractmethod
+from typing import Iterator, List, Optional
 
-from canvas_api_client.types import (RequestParams, Response)
+from canvas_api_client.types import RequestParams
+
+from requests import Response
 
 
 class CanvasAPIClient(metaclass=ABCMeta):
@@ -19,7 +21,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Returns a generator of courses for a given account.
         """
-        pass
 
     @abstractmethod
     def get_course_info(self,
@@ -38,7 +39,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Returns a generator of course enrollments for a given course.
         """
-        pass
 
     @abstractmethod
     def delete_enrollment(self,
@@ -49,7 +49,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Deletes an enrollment for a given course.
         """
-        pass
 
     @abstractmethod
     def put_page(self,
@@ -65,7 +64,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Creates a new wiki page for a given course
         """
-        pass
 
     @abstractmethod
     def import_sis_data(self,
@@ -75,7 +73,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Uploads a CSV containing Student Information Services (SIS) changes.
         """
-        pass
 
     @abstractmethod
     def get_sis_import_status(self,
@@ -85,7 +82,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Get the status of an already created SIS import.
         """
-        pass
 
     @abstractmethod
     def get_account_roles(self,
@@ -95,7 +91,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Get the roles for an existing account.
         """
-        pass
 
     @abstractmethod
     def update_course(self,
@@ -105,7 +100,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Updates a given course.
         """
-        pass
 
     @abstractmethod
     def publish_course(self,
@@ -115,7 +109,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Publishes a given course.
         """
-        pass
 
     @abstractmethod
     def associate_courses_to_blueprint(self,
@@ -126,7 +119,6 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Associates courses to a given blueprint course.
         """
-        pass
 
     @abstractmethod
     def get_account_blueprint_courses(self,
@@ -136,4 +128,3 @@ class CanvasAPIClient(metaclass=ABCMeta):
         """
         Get all the blueprint courses in a given account
         """
-        pass

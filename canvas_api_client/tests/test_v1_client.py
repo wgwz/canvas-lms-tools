@@ -1,9 +1,7 @@
-import os
-
 from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.errors import APIPaginationException
 
-from unittest import (skipIf, TestCase)
+from unittest import TestCase
 from unittest.mock import MagicMock, patch, mock_open
 
 from requests import HTTPError
@@ -41,9 +39,6 @@ class TestCanvasAPIv1Client(TestCase):
                                        'foo_token',
                                        requests_lib=self._mock_requests)
 
-    # TODO(lcary): https://github.com/lcary/canvas-lms-tools/issues/3
-    @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-            "Skipping this test on Travis CI due to nonsensical error.")
     def test_send_request(self):
         mock_response = MagicMock()
 
@@ -61,7 +56,7 @@ class TestCanvasAPIv1Client(TestCase):
                 'x': 'y'
             })
 
-        returned_response.raise_for_status.assert_called_once()
+        self.assertTrue(returned_response.raise_for_status.called)
         test_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar',
@@ -69,6 +64,25 @@ class TestCanvasAPIv1Client(TestCase):
             params={
                 'x': 'y'
             })
+
+    @patch('canvas_api_client.v1_client.logger')
+    def test_send_request_not_ok(self, mock_logger):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+        mock_response = MagicMock(ok=False, url=url)
+
+        test_callback = self._mock_requests.get
+        test_callback.return_value = mock_response
+
+        returned_response = self.test_client._send_request(
+            test_callback,
+            url,
+            exit_on_error=True,
+            headers={'foo': 'bar'},
+            params={
+                'x': 'y'
+            })
+        debug_msg = 'Error status code for url "{}"'.format(url)
+        mock_logger.debug.assert_called_once_with(debug_msg)
 
     def test_get_paginated_exception(self):
         mock_response = MagicMock()
