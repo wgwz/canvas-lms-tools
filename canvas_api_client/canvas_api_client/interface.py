@@ -22,6 +22,15 @@ class CanvasAPIClient(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_course_info(self,
+                        course_id: str,
+                        is_sis_course_id: bool = False,
+                        params: RequestParams = None) -> Response:
+        """
+        Get the course information for a given course.
+        """
+
+    @abstractmethod
     def get_course_users(self,
                          course_id: str,
                          is_sis_course_id: bool = False,

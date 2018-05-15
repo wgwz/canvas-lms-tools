@@ -113,6 +113,31 @@ class TestCanvasAPIv1Client(TestCase):
         next(self.test_client.get_account_courses('1'))
         _assert_request_called_once_with(self._mock_requests.get, url)
 
+    def test_get_course_info(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/57000'
+
+        self.test_client.get_course_info('57000')
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_course_info_sis_id(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:ABCD'
+
+        self.test_client.get_course_info('ABCD', is_sis_course_id=True)
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_course_info_with_params(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/57000'
+        params = {
+            'include[]': ['term', 'total_students', 'teachers']
+        }
+
+        self.test_client.get_course_info('57000', params=params)
+
+        _assert_request_called_once_with(
+            self._mock_requests.get,
+            url,
+            params=params)
+
     def test_get_course_users(self):
         url = 'https://foo.cc.columbia.edu/api/v1/courses/57000/users'
 
