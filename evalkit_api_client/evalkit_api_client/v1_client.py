@@ -4,6 +4,7 @@ from requests import Response
 from typing import Any, Dict, Iterator, Optional
 from urllib.parse import urljoin
 
+from evalkit_api_client.errors import APIPaginationException
 from evalkit_api_client.interface import EvalKitAPIClient
 from evalkit_api_client.types import RequestHeaders, RequestParams
 
@@ -115,14 +116,26 @@ class EvalKitAPIv1(EvalKitAPIClient):
         Returns a generator of response objects.
         """
         response = self._get(url, headers=headers, params=params)
-        self._check_response_headers_for_pagination(response)
 
-        yield response.json()
+        resp_json = response.json()
+        try:
+            page = resp_json['page']
+            page_size = resp_json['pageSize']
+            result_list = resp_json['resultList']
+        except KeyError:
+            logger.debug(url)
+            logger.debug(resp_json)
+            raise APIPaginationException(
+                'Pagination is not available for this endpoint')
 
-        while 'next' in response.links:
-            response = self._get(
-                response.links['next']['url'], headers=headers)
-            yield response.json()
+        if len(result_list) == page_size:
+            yield resp_json
+            self._get_paginated(
+                url,
+                headers=headers,
+                params=params.update({'page': page + 1}))
+        else:
+            yield resp_json
 
     def get_projects(self,
                     params: RequestParams = None
@@ -131,7 +144,7 @@ class EvalKitAPIv1(EvalKitAPIClient):
         Get the projects for a given account.
         """
         endpoint = "projects"
-        return self._get(self._get_url(endpoint))
+        return self._get_paginated(self._get_url(endpoint))
 
     def get_non_responders(self,
                           project_id: str,
@@ -141,4 +154,4 @@ class EvalKitAPIv1(EvalKitAPIClient):
         Get the non-responders for a given project.
         """
         endpoint = "projects/{}/nonRespondents".format(project_id)
-        return self._get(self._get_url(endpoint))
+        return self._get_paginated(self._get_url(endpoint))
