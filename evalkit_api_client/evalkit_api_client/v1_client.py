@@ -106,15 +106,10 @@ class EvalKitAPIv1(EvalKitAPIClient):
         return self._send_request(
             requests.put, *args, **kwargs)  # type: ignore
 
-    def _get_paginated(self,
+    def _get_validated_page_json(self,
                        url: str,
                        headers: RequestHeaders = None,
-                       params: RequestParams = None) -> Iterator[Response]:
-        """
-        Send an API call to the evalkit server with pagination.
-
-        Returns a generator of response objects.
-        """
+                       params: RequestParams = None) -> Dict:
         response = self._get(url, headers=headers, params=params)
 
         resp_json = response.json()
@@ -123,35 +118,61 @@ class EvalKitAPIv1(EvalKitAPIClient):
             page_size = resp_json['pageSize']
             result_list = resp_json['resultList']
         except KeyError:
-            logger.debug(url)
-            logger.debug(resp_json)
             raise APIPaginationException(
                 'Pagination is not available for this endpoint')
 
-        if len(result_list) == page_size:
+        return resp_json
+
+    def _get_paginated(self,
+                       url: str,
+                       headers: RequestHeaders = None,
+                       params: RequestParams = None) -> Iterator[Dict]:
+        """
+        Send an API call to the evalkit server with pagination.
+
+        Returns a generator of dictionary objects.
+
+        TODO: Evalkit's pagination is broken, but this logic works the way
+        the Evalkit docs say it should.
+        """
+        if params is None:
+            params = {}
+
+        counter = 0
+        retrieve_next_page = True
+
+        while retrieve_next_page:
+            params = {'page': counter + 1}
+            resp_json = self._get_validated_page_json(url,
+                                                      headers=headers,
+                                                      params=params)
+
             yield resp_json
-            self._get_paginated(
-                url,
-                headers=headers,
-                params=params.update({'page': page + 1}))
-        else:
-            yield resp_json
+
+            if len(resp_json['resultList']) < resp_json['pageSize']:
+                retrieve_next_page = False
+            else:
+                counter += 1
 
     def get_projects(self,
                     params: RequestParams = None
-                    ) -> Iterator[Response]:
+                    ) -> Iterator[Dict]:
         """
         Get the projects for a given account.
+
+        TODO: use pagination when available.
         """
         endpoint = "projects"
-        return self._get_paginated(self._get_url(endpoint))
+        return self._get(self._get_url(endpoint))
 
     def get_non_responders(self,
                           project_id: str,
                           params: RequestParams = None
-                          ) -> Iterator[Response]:
+                          ) -> Iterator[Dict]:
         """
-        Get the non-responders for a given project.
+        Get the non-respondents for a given project.
+
+        TODO: use pagination when available.
         """
         endpoint = "projects/{}/nonRespondents".format(project_id)
-        return self._get_paginated(self._get_url(endpoint))
+        return self._get(self._get_url(endpoint))
