@@ -76,16 +76,16 @@ file is the intended way to use the client.
 
 ```
 $ python
->>> from evalkit_api_client.v1_client import CanvasAPIv1
->>> url = 'https://my.canvas.instance.com/api/v1/'
->>> token = '1396~xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx'
->>> api = CanvasAPIv1(url, token)
->>> l = api.get_account_blueprint_courses('1234')
->>> for r in l.json():
-...     print(r['id'], r['name'])
+>>> from evalkit_api_client.v1_client import EvalKitAPIv1
+>>> url = 'https://sub-account.evaluationkit.com/api/v1'
+>>> token = 'xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx'
+>>> api = EvalkKitAPIv1(url, token)
+>>> projects = api.get_projects()
+>>> for p in projects.json()['resultList']:
+...     print(p['id'], p['title'])
 ...
-49400 Course_9000_Blueprint
-57600 Spring_2018_Blueprint
+49400 Test Evaluation A
+57600 Test Eval B
 ```
 
 #### Script Example
@@ -93,8 +93,8 @@ $ python
 This very simple example requires a few environment variables. The
 API URL and token should be something like:
 ```
-CANVAS_API_URL=https://my.canvas.instance.com/api/v1/
-CANVAS_API_TOKEN=1396~xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx
+EVALKIT_API_URL=https://sub-account.evaluationkit.com/api/v1
+EVALKIT_API_TOKEN=xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx
 ```
 
 The recommended approach is to use a config file with limited read
@@ -106,42 +106,25 @@ Once installed in your project via pip, use as follows:
 from os import environ
 from pprint import pprint
 
-from evalkit_api_client.v1_client import CanvasAPIv1
+from evalkit_api_client.v1_client import EvalKitAPIv1
 
-url = environ.get('CANVAS_API_URL')
-token = environ.get('CANVAS_API_TOKEN')
+url = environ.get('EVALKIT_API_URL')
+token = environ.get('EVALKIT_API_TOKEN')
 
-api = CanvasAPIv1(url, token)
-params = {"override_sis_stickiness": "true"}
-response = api.import_sis_data('1', './courses.csv', params=params)
+api = EvalKitAPIv1(url, token)
+projects = api.get_projects()
 
-print('SIS Import Response:')
-pprint(response.json())
+print(projects.json())
 ```
 
-#### CanvasAPIv1
+#### EvalKitAPIv1
 
-This library is meant to be imported into your code. The `CanvasAPIv1` client
+This library is meant to be imported into your code. The `EvalKitAPIv1` client
 object requires a `api_url` argument and a `api_token` argument. The `api_url`
 should likely be defined in a configuration file, and should be the full API
-URL without the endpoint, e.g. `https://canvas.com/api/v1/`. The `api_token`
-should similarly be defined in a config file, and is the token generated in
-the Canvas settings page.
-
-There are a few helper functions that assist in sharing code between methods
-in `CanvasAPIv1` which are worth pointing out. For example, there is a method
-for each request type, such as `._get()` for GET requests, etc. Each one of
-these request type methods invokes `self._send_request()` which takes a
-number of parameters and returns a
-[`requests.Response`](http://docs.python-requests.org/en/master/api/#requests.Response)
-object by default. Most of the public methods of the api client thus return
-a `Response` object, so the caller will have access to the typical response
-methods, such as `response.json()`.
-
-I say "by default", because it is possible to pass in your own requests
-library. This is not necessarily recommended; this capability only exists for
-the sake of easy dependency injection in unit testing as well as compatibility
-with libraries such as requests-oauthlib.
+URL without the endpoint, e.g. `https://sub.evaluationkit.com/api/v1/`. The `api_token`
+should similarly be defined in a config file, and is the token generated for
+a given subaccount in EvaluationKit.
 
 Refer to the client interface [documentation](#documentation) for more information.
 
