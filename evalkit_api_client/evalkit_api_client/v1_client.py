@@ -156,7 +156,7 @@ class EvalKitAPIv1(EvalKitAPIClient):
 
     def get_projects(self,
                     params: RequestParams = None
-                    ) -> Iterator[Dict]:
+                    ) -> Response:
         """
         Get the projects for a given account.
 
@@ -168,7 +168,7 @@ class EvalKitAPIv1(EvalKitAPIClient):
     def get_non_responders(self,
                           project_id: str,
                           params: RequestParams = None
-                          ) -> Iterator[Dict]:
+                          ) -> Response:
         """
         Get the non-respondents for a given project.
 

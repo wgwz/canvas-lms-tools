@@ -14,7 +14,7 @@ class EvalKitAPIClient(metaclass=ABCMeta):
     @abstractmethod
     def get_projects(self,
                     params: RequestParams = None
-                    ) -> Iterator[Response]:
+                    ) -> Response:
         """
         Returns a generator of projects for a given account.
         """
@@ -23,7 +23,7 @@ class EvalKitAPIClient(metaclass=ABCMeta):
     def get_non_responders(self,
                           project_id: str,
                           params: RequestParams = None
-                          ) -> Iterator[Response]:
+                          ) -> Response:
         """
         Returns a generator of non-responders for a given project.
         """
