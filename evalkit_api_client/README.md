@@ -79,9 +79,10 @@ $ python
 >>> from evalkit_api_client.v1_client import EvalKitAPIv1
 >>> url = 'https://sub-account.evaluationkit.com/api/v1'
 >>> token = 'xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx'
->>> api = EvalkKitAPIv1(url, token)
->>> projects = api.get_projects()
->>> for p in projects.json()['resultList']:
+>>> api = EvalKitAPIv1(url, token)
+>>> projects = api.get_projects().json()
+>>> len(projects.json())  # number of projects in sub-account
+>>> for p in projects.['resultList']:
 ...     print(p['id'], p['title'])
 ...
 49400 Test Evaluation A
