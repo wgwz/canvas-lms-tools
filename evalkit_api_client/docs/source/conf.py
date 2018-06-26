@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C documentation build configuration file, created by
+# eval_kit_api_client documentation build configuration file, created by
 # cookiecutter pipproject
 #
 # This file is execfile()d with the current directory set to its
@@ -48,8 +48,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C'
-copyright = '2016, Kyle Lawlor'
+project = 'eval_kit_api_client'
+copyright = '2018, Kyle Lawlor'
 author = 'Kyle Lawlor'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -123,7 +123,7 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
-#html_title = 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C v0.0.1'
+#html_title = 'eval_kit_api_client v0.0.1'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -205,7 +205,7 @@ html_static_path = ['_static']
 #html_search_scorer = 'scorer.js'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[Cdoc'
+htmlhelp_basename = 'eval_kit_api_client doc'
 
 # -- Options for LaTeX output ---------------------------------------------
 
@@ -227,7 +227,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C.tex', 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C Documentation',
+    (master_doc, 'eval_kit_api_client.tex', 'eval_kit_api_client Documentation',
      'Kyle Lawlor', 'manual'),
 ]
 
@@ -257,7 +257,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C', 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C Documentation',
+    (master_doc, 'eval_kit_api_client', 'eval_kit_api_client Documentation',
      [author], 1)
 ]
 
@@ -271,8 +271,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C', 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C Documentation',
-     author, 'eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C', 'One line description of project.',
+    (master_doc, 'eval_kit_api_client', 'eval_kit_api_client Documentation',
+     author, 'eval_kit_api_client', 'One line description of project.',
      'Miscellaneous'),
 ]
 

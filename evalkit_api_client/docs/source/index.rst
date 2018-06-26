@@ -1,4 +1,4 @@
-Welcome to eval_kit_api_client[D[D[D[D[D[D[D[D[D[D[D[D[D[D[D[[C[C[[C's documentation!
+Welcome to eval_kit_api_client's documentation!
 =========================================
 
 Contents:
