@@ -23,7 +23,10 @@ class CanvasAPIv1(CanvasAPIClient):
     def __init__(self,
                  api_url: str,
                  api_token: Optional[str] = None,
-                 requests_lib: Optional[Any] = requests) -> None:
+                 requests_lib: Optional[Any] = requests,
+                 per_page: Optional[int] = 100,
+                 is_sis_course_id: Optional[bool] = False
+                 ) -> None:
         """
         Creates a canvas API client given a base URL for the API, an optional
         API token, and an optional requests library.
@@ -34,6 +37,8 @@ class CanvasAPIv1(CanvasAPIClient):
         self._api_url = api_url
         self._api_token = api_token
         self._requests_lib = requests_lib
+        self._per_page = per_page
+        self._is_sis_course_id = is_sis_course_id
 
     def _get_url(self, endpoint: str) -> str:
         """
@@ -164,7 +169,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_course_users(self,
                          course_id: str,
-                         is_sis_course_id: bool = False,
+                         is_sis_course_id: bool = self._is_sis_course_id,
                          params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the v1 API.
@@ -181,7 +186,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def put_page(self,
                  course_id: str,
                  body: str,
-                 is_sis_course_id: bool = False,
+                 is_sis_course_id: bool = self._is_sis_course_id,
                  url: Optional[str] = None,
                  title: Optional[str] = None,
                  notify_of_update: Optional[bool] = False,
@@ -214,7 +219,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def delete_enrollment(self,
                           course_id: str,
                           enrollment_id: str,
-                          is_sis_course_id: bool = False,
+                          is_sis_course_id: bool = self._is_sis_course_id,
                           params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course from the v1 API. Use with caution.
@@ -260,7 +265,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_account_roles(self,
                           account_id: str,
-                          is_sis_account_id: bool = False,
+                          is_sis_account_id: bool = self._is_sis_course_id,
                           params: RequestParams = None) -> Response:
         """
         Get the roles for an existing account.
