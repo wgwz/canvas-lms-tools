@@ -75,6 +75,9 @@ class CanvasAPIv1(CanvasAPIClient):
         if params is None:
             params = {}
 
+        if 'per_page' not in params:
+            params['per_page'] = self._per_page
+
         if self._api_token is not None:
             self._add_bearer_token(headers)
 
