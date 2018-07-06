@@ -355,36 +355,56 @@ class TestCanvasAPIv1ClientParams(TestCase):
 
     def setUp(self,):
         self._mock_requests = MagicMock()
-        self.test_client = CanvasAPIv1(
+
+    def test_put_page_is_sis_course_id(self):
+        course = 'ASDFD5100_007_2018_2'
+        url = 'test_page'
+        title = 'Test Title'
+        body = '<html><body><h1>Test Title</h1><p>Foo</p></body></html>'
+        data = {
+            'wiki_page[url]': url,
+            'wiki_page[published]': True,
+            'wiki_page[notify_of_update]': False,
+            'wiki_page[title]': title,
+            'wiki_page[front_page]': False,
+            'wiki_page[body]': body
+            }
+
+        test_client = CanvasAPIv1(
             'https://foo.cc.columbia.edu/api/v1/',
             'foo_token',
             requests_lib=self._mock_requests,
             is_sis_course_id=True
             )
 
-    def test_send_request(self):
-        mock_response = MagicMock()
+        test_client.put_page(
+            course,
+            url=url,
+            title=title,
+            body=body
+            )
+        course_str = 'sis_course_id:{}'.format(course)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/pages/{}'.format(
+            course_str,
+            url
+            )
 
-        test_callback = self._mock_requests.get
-        test_callback.return_value = mock_response
-
-        url = 'https://foo.cc.columbia.edu/api/v1/search'
-
-        returned_response = self.test_client._send_request(
-            test_callback,
+        _assert_request_called_once_with(
+            self._mock_requests.put,
             url,
-            exit_on_error=True,
-            headers={'foo': 'bar'},
-            params={
-                'x': 'y'
-            })
+            params=DEFAULT_PARAMS,
+            data=data
+            )
 
-        returned_response.raise_for_status.assert_called_once_with()
-        test_callback.assert_called_once_with(
-            url,
-            headers={'foo': 'bar',
-                     'Authorization': 'Bearer foo_token'},
-            params={
-                'x': 'y',
-                'per_page': 100
-            })
+    def test_get_account_roles_sis(self):
+        test_client = CanvasAPIv1(
+            'https://foo.cc.columbia.edu/api/v1/',
+            'foo_token',
+            requests_lib=self._mock_requests,
+            is_sis_account_id=True
+            )
+
+        test_client.get_account_roles('ASDF')
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
