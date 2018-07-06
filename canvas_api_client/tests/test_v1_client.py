@@ -6,6 +6,8 @@ from unittest.mock import MagicMock, patch, mock_open
 
 from requests import HTTPError
 
+DEFAULT_PARAMS = {'per_page': 100}
+
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -24,7 +26,9 @@ def _assert_request_called_once_with(mock_request_object, url, params=None, **kw
     Execute assert_called_once_with() on a unittest.mock object with default logic.
     """
     if params is None:
-        params = DEFAULT_PARAMS
+        params = {}
+
+    params.update(DEFAULT_PARAMS)
     mock_request_object.assert_called_once_with(
         url, params=params, headers={
             'Authorization': 'Bearer foo_token'
@@ -194,6 +198,7 @@ class TestCanvasAPIv1Client(TestCase):
         params = {'task': 'delete'}
         self.test_client.delete_enrollment(1234, 432432, params=params)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
+        params.update(DEFAULT_PARAMS)
         _assert_request_called_once_with(
             self._mock_requests.delete, url, params=params)
 
@@ -312,7 +317,7 @@ class TestCanvasAPIv1Client(TestCase):
         _assert_request_called_once_with(
             self._mock_requests.put,
             url,
-            params={},
+            params=DEFAULT_PARAMS,
             data=data)
 
     def test_associate_courses_to_blueprint_error(self):
@@ -354,7 +359,7 @@ class TestCanvasAPIv1ClientParams(TestCase):
             'https://foo.cc.columbia.edu/api/v1/',
             'foo_token',
             requests_lib=self._mock_requests,
-            is_sis_id=True
+            is_sis_course_id=True
             )
 
     def test_send_request(self):
