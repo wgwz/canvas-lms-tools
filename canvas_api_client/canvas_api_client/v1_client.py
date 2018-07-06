@@ -172,7 +172,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_course_users(self,
                          course_id: str,
-                         is_sis_course_id: bool = self._is_sis_course_id,
+                         is_sis_course_id: Optional[bool] = None,
                          params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the v1 API.
@@ -189,7 +189,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def put_page(self,
                  course_id: str,
                  body: str,
-                 is_sis_course_id: bool = self._is_sis_course_id,
+                 is_sis_course_id: Optional[bool] = None,
                  url: Optional[str] = None,
                  title: Optional[str] = None,
                  notify_of_update: Optional[bool] = False,
@@ -222,7 +222,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def delete_enrollment(self,
                           course_id: str,
                           enrollment_id: str,
-                          is_sis_course_id: bool = self._is_sis_course_id,
+                          is_sis_course_id: Optional[bool] = None,
                           params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course from the v1 API. Use with caution.
@@ -268,7 +268,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_account_roles(self,
                           account_id: str,
-                          is_sis_account_id: bool = self._is_sis_course_id,
+                          is_sis_account_id: Optional[bool] = None,
                           params: RequestParams = None) -> Response:
         """
         Get the roles for an existing account.

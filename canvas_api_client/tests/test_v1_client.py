@@ -6,6 +6,7 @@ from canvas_api_client.errors import APIPaginationException
 from unittest import (skipIf, TestCase)
 from unittest.mock import MagicMock, patch, mock_open
 
+DEFAULT_PARAMS = {'per_page': 100}
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -24,7 +25,7 @@ def _assert_request_called_once_with(mock_request_object, url, params=None, **kw
     Execute assert_called_once_with() on a unittest.mock object with default logic.
     """
     if params is None:
-        params = {}
+        params = DEFAULT_PARAMS
     mock_request_object.assert_called_once_with(
         url, params=params, headers={
             'Authorization': 'Bearer foo_token'
@@ -184,7 +185,7 @@ class TestCanvasAPIv1Client(TestCase):
         _assert_request_called_once_with(
             self._mock_requests.put,
             url,
-            params={},
+            params=DEFAULT_PARAMS,
             data=data
             )
 
@@ -196,7 +197,11 @@ class TestCanvasAPIv1Client(TestCase):
             with open('foo.csv', 'rb') as f:
                 files = {'attachment': f}
                 _assert_request_called_once_with(
-                    self._mock_requests.post, url, params=None, files=files)
+                    self._mock_requests.post,
+                    url,
+                    params=DEFAULT_PARAMS,
+                    files=files
+                    )
 
     def test_import_sis_data_file_not_found(self):
         m = mock_open()
