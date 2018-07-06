@@ -1,111 +1,94 @@
 Canvas LMS API Client Library
 =============================
 
-Version number: 0.2
-
-Author: Luc Cary
-
-Contributors: Kyle Lawlor, Thomas Barraro, Angus Grieve-Smith
+[Overview](#overview)  
+[Testing](#testing)  
+[Documentation](#documentation)  
+[Installation](#installation)  
+[Usage](#usage)  
+[Contributing](#contributing)  
+[References](#references)  
 
 Overview
 --------
 
 This is a library for making requests to a Canvas LMS API.
 
-Canvas LMS API documentation:
+Testing
+-------
 
+This project is tested with [tox](https://tox.readthedocs.io/en/latest/).
+
+Run the tox command to run checks and unit tests:
+```
+$ tox
+```
+
+By default, this project's tox runs:
+
+ * [flake8](http://flake8.pycqa.org/en/latest/)
+ * [mypy](https://github.com/python/mypy)
+ * [pytest](https://docs.pytest.org/en/latest/)
+
+To create test coverage reports:
+```
+$ tox -e cov
+```
+
+Deployment
+----------
+
+Deployment to pypi is done with tox:
+```
+$ tox -e deploy
+```
+Make sure to bump the version in setup.py before deploying.
+
+Documentation
+-------------
+
+This project has Sphinx documentation at the following url:  
+https://lcary.github.io/canvas-lms-tools/
+
+The public Canvas LMS API documentation is also very useful:  
 https://canvas.instructure.com/doc/api/index.html
 
-This project was originally created with the following "cookiecutter" tool:
-
-https://github.com/wdm0006/cookiecutter-pipproject
-
-Installation / Usage
---------------------
+Installation
+------------
 
 To install, use pip:
 
-    $ pip install canvas_api_client
+    pip install canvas_api_client
 
 Or clone the repo:
 
-    $ git clone https://github.com/lcary/canvas_api_client.git
-    $ python setup.py install
+    git clone https://github.com/lcary/canvas-lms-tools.git
+    cd canvas-lms-tools/canvas_api_client
+    python setup.py install
+
+Usage
+-----
 
 Adding the client as a dependency in your project's `requirements.txt`
 file is the intended way to use the client.
 
-#### Using CanvasAPIv1 ####
+#### REPL Example
 
-This library is meant to be imported into your code. The `CanvasAPIv1` client
-object requires a `api_url` argument and a `api_token` argument. The `api_url`
-should likely be defined in a configuration file, and should be the full API
-URL without the endpoint, e.g. `https://canvas.com/api/v1/`. The `api_token`
-should similarly be defined in a config file, and is the token generated in
-the Canvas settings page.
+```
+$ python
+>>> from canvas_api_client.v1_client import CanvasAPIv1
+>>> url = 'https://my.canvas.instance.com/api/v1/'
+>>> token = '1396~xxxxxxxxxxxxxxxxxxxTHISxISxNOTxAxREALxTOKENxxxxxxxxxxxxxxxxxxxxx'
+>>> api = CanvasAPIv1(url, token)
+>>> l = api.get_account_blueprint_courses('1234')
+>>> for r in l.json():
+...     print(r['id'], r['name'])
+...
+49400 Course_9000_Blueprint
+57600 Spring_2018_Blueprint
+```
 
-There are a few helper functions that assist in sharing code between methods
-in `CanvasAPIv1` which are worth pointing out. For example, there is a method
-for each request type, such as `._get()` for GET requests, etc. Each one of
-these request type methods invokes `self._send_request()` which takes a
-number of parameters and returns a
-[`requests.Response`](http://docs.python-requests.org/en/master/api/#requests.Response)
-object by default. Most of the public methods of the api client thus return
-a `Response` object, so the caller will have access to the typical response
-methods, such as `response.json()`.
-
-I say "by default", because it is possible to pass in your own requests
-library. This is not necessarily recommended; this capability only exists for
-the sake of easy dependency injection in unit testing as well as compatibility
-with libraries such as requests-oauthlib.
-
-See the examples section at the bottom for more info.
-
-Contributing
-------------
-
-This project is tested with python3, and additionally has mypy integration.
-
-Note: before building, make sure to bump the `__version__` in the `setup.py` file.
-
-#### Building Wheels ####
-
-Building the wheel:
-
-    python setup.py bdist_wheel
-
-#### Installing Wheels ####
-
-How to install the client for testing:
-
-    pip uninstall canvas_api_client || echo "Already uninstalled."
-    pip install --no-index --find-links=dist canvas_api_client
-
-Alternatively, install by specifying the full or relative path to the `.whl` file:
-
-    pip install --no-index /path/to/canvas-lms-tools/canvas_api_client/dist/canvas_api_client-<version>-py2.py3-none-any.whl
-
-(You may need to `pip install wheel` first if you are installing from another 
-project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
-for more help.)
-
-#### Deploying Wheels ####
-
-Publishing to pypi (requires [twine](https://packaging.python.org/tutorials/distributing-packages/#requirements-for-packaging-and-distributing) to be installed):
-
-    twine upload dist/canvas_api_client-<version>-py2.py3-none-any.whl
-
-#### Building Docs ####
-
-Creating the docs:
-
-    cd docs
-    pip install -r requirements.txt
-    make html
-    open build/html/index.html
-
-Example
--------
+#### Script Example
 
 This very simple example requires a few environment variables. The
 API URL and token should be something like:
@@ -136,4 +119,88 @@ print('SIS Import Response:')
 pprint(response.json())
 ```
 
-Refer to the client interface documentation for more information.
+#### CanvasAPIv1
+
+This library is meant to be imported into your code. The `CanvasAPIv1` client
+object requires a `api_url` argument and a `api_token` argument. The `api_url`
+should likely be defined in a configuration file, and should be the full API
+URL without the endpoint, e.g. `https://canvas.com/api/v1/`. The `api_token`
+should similarly be defined in a config file, and is the token generated in
+the Canvas settings page.
+
+There are a few helper functions that assist in sharing code between methods
+in `CanvasAPIv1` which are worth pointing out. For example, there is a method
+for each request type, such as `._get()` for GET requests, etc. Each one of
+these request type methods invokes `self._send_request()` which takes a
+number of parameters and returns a
+[`requests.Response`](http://docs.python-requests.org/en/master/api/#requests.Response)
+object by default. Most of the public methods of the api client thus return
+a `Response` object, so the caller will have access to the typical response
+methods, such as `response.json()`.
+
+I say "by default", because it is possible to pass in your own requests
+library. This is not necessarily recommended; this capability only exists for
+the sake of easy dependency injection in unit testing as well as compatibility
+with libraries such as requests-oauthlib.
+
+Refer to the client interface [documentation](#documentation) for more information.
+
+Contributing
+------------
+
+#### Building Wheels
+
+Building the wheel:
+
+    python setup.py bdist_wheel
+
+#### Installing Wheels
+
+How to install the client for testing:
+
+    pip uninstall canvas_api_client || echo "Already uninstalled."
+    pip install --no-index --find-links=dist canvas_api_client
+
+Alternatively, install by specifying the full or relative path to the `.whl` file:
+
+    pip install --no-index /path/to/canvas-lms-tools/canvas_api_client/dist/canvas_api_client-<version>-py2.py3-none-any.whl
+
+(You may need to `pip install wheel` first if you are installing from another 
+project. Consult [stack overflow](https://stackoverflow.com/questions/28002897/wheel-file-installation)
+for more help.)
+
+#### Sphinx Docs
+
+Creating the docs:
+
+    cd docs
+    pip install -r requirements.txt
+    pip install canvas_api_client
+    make html
+    open build/html/index.html
+
+Deploying the docs to GitHub pages:
+
+    git checkout master
+    git pull
+    git branch -D gh-pages
+    git checkout -b gh-pages
+    rm -rf ./*
+    touch .nojekyll
+    git checkout master canvas_api_client/docs/
+    < build the docs as above > 
+    mv canvas_api_client/docs/build/html/* ./
+    rm -rf canvas_api_client
+    git add -A
+    git commit
+    git push -f origin gh-pages
+
+For more info see the [GitHub Pages documentation](https://pages.github.com/),
+the [Sphinx docs](http://www.sphinx-doc.org/en/master/contents.html),
+or the following [script docs](http://www.willmcginnis.com/2016/02/29/automating-documentation-workflow-with-sphinx-and-github-pages/).
+
+References
+----------
+
+This project was originally created with the following "cookiecutter" tool:  
+https://github.com/wdm0006/cookiecutter-pipproject

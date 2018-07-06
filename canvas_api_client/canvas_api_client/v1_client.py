@@ -1,12 +1,12 @@
 import logging
-import os
-from typing import (Any, Dict, Iterator, Optional)
+from typing import Any, Dict, Iterator, List, Optional
 
 from canvas_api_client.errors import APIPaginationException
 from canvas_api_client.interface import CanvasAPIClient
-from canvas_api_client.types import (RequestHeaders, RequestParams, Response)
+from canvas_api_client.types import RequestHeaders, RequestParams
 
 import requests
+from requests import Response
 
 logger = logging.getLogger()
 
@@ -49,7 +49,8 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def _add_bearer_token(self, headers: Dict[str, Any]):
         """
-        Adds the authentication bearer token. Only run this if the token exists.
+        Adds the authentication bearer token. Only run this if the token
+        exists.
         """
         token_str = "Bearer {}".format(self._api_token)
         headers.update({'Authorization': token_str})
@@ -67,7 +68,7 @@ class CanvasAPIv1(CanvasAPIClient):
         The callback should be a requests.<func> function or the equivalent.
 
         Note: since raise_for_status() will raise an exception for error
-        codes, the user is responsible for catching requests.exceptions.HTTPError
+        codes, the user is responsible for catching `HTTPError`
         exceptions unless they run with the exit_on_error set to False.
         """
         if headers is None:
@@ -93,25 +94,29 @@ class CanvasAPIv1(CanvasAPIClient):
         """
         Sends a GET request to the API.
         """
-        return self._send_request(self._requests_lib.get, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.get, *args, **kwargs)  # type: ignore
 
     def _delete(self, *args, **kwargs) -> Response:
         """
         Sends a DELETE request to the API.
         """
-        return self._send_request(self._requests_lib.delete, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.delete, *args, **kwargs)  # type: ignore
 
     def _post(self, *args, **kwargs) -> Response:
         """
         Sends a POST request to the API.
         """
-        return self._send_request(self._requests_lib.post, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.post, *args, **kwargs)  # type: ignore
 
     def _put(self, *args, **kwargs) -> Response:
         """
         Sends a PUT request to the API.
         """
-        return self._send_request(self._requests_lib.put, *args, **kwargs)
+        return self._send_request(
+            self._requests_lib.put, *args, **kwargs)  # type: ignore
 
     def _check_response_headers_for_pagination(self, response: Response):
         """
@@ -170,12 +175,29 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
+    def get_course_info(self,
+                        course_id: str,
+                        is_sis_course_id: bool = False,
+                        params: RequestParams = None) -> Response:
+        """
+        Get the course information for a given course.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.show
+        """
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+
+        endpoint = "courses/{}".format(course_id)
+
+        return self._get(self._get_url(endpoint), params=params)
+
     def get_course_users(self,
                          course_id: str,
                          is_sis_course_id: Optional[bool] = None,
                          params: RequestParams = None) -> Iterator[Response]:
         """
-        Returns a generator of course enrollments for a given course from the v1 API.
+        Returns a generator of course enrollments for a given course from the
+        v1 Canvas API.
 
         https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
@@ -225,7 +247,8 @@ class CanvasAPIv1(CanvasAPIClient):
                           is_sis_course_id: Optional[bool] = None,
                           params: RequestParams = None) -> Response:
         """
-        Deletes an enrollment for a given course from the v1 API. Use with caution.
+        Deletes an enrollment for a given course from the v1 API. Use with
+        caution.
 
         https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy
         """
@@ -242,7 +265,8 @@ class CanvasAPIv1(CanvasAPIClient):
                         data_file: str,
                         params: RequestParams = None) -> Response:
         """
-        Import SIS data into Canvas. Must be on a root account with SIS imports enabled.
+        Import SIS data into Canvas. Must be on a root account with SIS
+        imports enabled.
 
         https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.create
 
@@ -263,7 +287,8 @@ class CanvasAPIv1(CanvasAPIClient):
 
         https://canvas.instructure.com/doc/api/sis_imports.html#method.sis_imports_api.show
         """
-        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id, sis_import_id)
+        endpoint = 'accounts/{}/sis_imports/{}'.format(account_id,
+                                                       sis_import_id)
         return self._get(self._get_url(endpoint), params=params)
 
     def get_account_roles(self,
@@ -278,4 +303,70 @@ class CanvasAPIv1(CanvasAPIClient):
         if is_sis_account_id:
             account_id = self._format_sis_account_id(account_id)
         endpoint = 'accounts/{}/roles'.format(account_id)
+        return self._get(self._get_url(endpoint), params=params)
+
+    def update_course(self,
+                      course_id: str,
+                      is_sis_course_id: bool = False,
+                      params: RequestParams = None) -> Response:
+        """
+        Updates a given course.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.update
+        """
+        if is_sis_course_id:
+            course_id = self._format_sis_course_id(course_id)
+        endpoint = 'courses/{}'.format(course_id)
+        return self._put(self._get_url(endpoint), params=params)
+
+    def publish_course(self,
+                       course_id: str,
+                       is_sis_course_id: bool = False,
+                       params: RequestParams = None) -> Response:
+        """
+        Publishes a given course.
+
+        https://canvas.instructure.com/doc/api/courses.html#method.courses.update
+        """
+        if params is None:
+            params = {}
+        params.update({'offer': 'true'})
+        return self.update_course(
+            course_id, is_sis_course_id=is_sis_course_id, params=params)
+
+    def associate_courses_to_blueprint(self,
+                                       course_id: str,
+                                       course_ids: List[str],
+                                       params: RequestParams = None
+                                       ) -> Response:
+        """Associate courses to a blueprint course
+
+        https://courseworks2.columbia.edu/doc/api/live#!/blueprint_courses.json
+
+        Args:
+            course_id: id of the blueprint course
+            course_ids: ids of courses to associate
+        """
+        endpoint = (
+            "courses/{course_id}/blueprint_templates/"
+            "default/update_associations").format(course_id=course_id)
+        data = {'course_ids_to_add[]': course_ids}
+        return self._put(self._get_url(endpoint), params=params, data=data)
+
+    def get_account_blueprint_courses(self,
+                                      account_id: str,
+                                      params: RequestParams = None
+                                      ) -> Response:
+        """Get all the blueprint courses in a given account
+
+        https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api
+        """
+        endpoint = "accounts/{account_id}/courses".format(
+            account_id=account_id)
+        if params is None:
+            params = {}
+        params.update({
+            'blueprint': 'true',
+            'include[]': ['subaccount', 'term']
+        })
         return self._get(self._get_url(endpoint), params=params)

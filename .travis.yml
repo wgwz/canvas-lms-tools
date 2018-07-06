@@ -1,9 +1,11 @@
+sudo: false
 language: python
 python:
   - "3.5"
-# command to install dependencies
+  - "3.6"
 install:
-  - pip install -r canvas_api_client/requirements.txt
-# command to run tests
+  - pip install tox-travis
+before_script:
+  - cd canvas_api_client
 script:
-  - py.test
+  - tox

@@ -1,12 +1,11 @@
-import os
-
 from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.errors import APIPaginationException
 
-from unittest import (skipIf, TestCase)
+from unittest import TestCase
 from unittest.mock import MagicMock, patch, mock_open
 
-DEFAULT_PARAMS = {'per_page': 100}
+from requests import HTTPError
+
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -40,9 +39,6 @@ class TestCanvasAPIv1Client(TestCase):
                                        'foo_token',
                                        requests_lib=self._mock_requests)
 
-    # TODO(lcary): https://github.com/lcary/canvas-lms-tools/issues/3
-    @skipIf("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
-            "Skipping this test on Travis CI due to nonsensical error.")
     def test_send_request(self):
         mock_response = MagicMock()
 
@@ -61,6 +57,7 @@ class TestCanvasAPIv1Client(TestCase):
             })
 
         returned_response.raise_for_status.assert_called_once_with()
+
         test_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar',
@@ -69,6 +66,25 @@ class TestCanvasAPIv1Client(TestCase):
                 'x': 'y',
                 'per_page': 100
             })
+
+    @patch('canvas_api_client.v1_client.logger')
+    def test_send_request_not_ok(self, mock_logger):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+        mock_response = MagicMock(ok=False, url=url)
+
+        test_callback = self._mock_requests.get
+        test_callback.return_value = mock_response
+
+        returned_response = self.test_client._send_request(
+            test_callback,
+            url,
+            exit_on_error=True,
+            headers={'foo': 'bar'},
+            params={
+                'x': 'y'
+            })
+        debug_msg = 'Error status code for url "{}"'.format(url)
+        mock_logger.debug.assert_called_once_with(debug_msg)
 
     def test_get_paginated_exception(self):
         mock_response = MagicMock()
@@ -112,6 +128,31 @@ class TestCanvasAPIv1Client(TestCase):
 
         next(self.test_client.get_account_courses('1'))
         _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_course_info(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/57000'
+
+        self.test_client.get_course_info('57000')
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_course_info_sis_id(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:ABCD'
+
+        self.test_client.get_course_info('ABCD', is_sis_course_id=True)
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+    def test_get_course_info_with_params(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/57000'
+        params = {
+            'include[]': ['term', 'total_students', 'teachers']
+        }
+
+        self.test_client.get_course_info('57000', params=params)
+
+        _assert_request_called_once_with(
+            self._mock_requests.get,
+            url,
+            params=params)
 
     def test_get_course_users(self):
         url = 'https://foo.cc.columbia.edu/api/v1/courses/57000/users'
@@ -227,6 +268,83 @@ class TestCanvasAPIv1Client(TestCase):
         url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
         _assert_request_called_once_with(self._mock_requests.get, url)
 
+    def test_update_course(self):
+        self.test_client.update_course('ASDFD5100_007_2018_2', is_sis_course_id=True)
+        url = ('https://foo.cc.columbia.edu/api/v1/courses/'
+               'sis_course_id:ASDFD5100_007_2018_2')
+        _assert_request_called_once_with(self._mock_requests.put, url)
+
+    def test_update_course_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.update_course('ASDFD5100_007_2018_2',
+                is_sis_course_id=True)
+
+    def test_publish_course(self):
+        params = {'offer': 'true'}
+        self.test_client.publish_course('ASDFD5100_007_2018_2', is_sis_course_id=True)
+        url = ('https://foo.cc.columbia.edu/api/v1/courses/'
+               'sis_course_id:ASDFD5100_007_2018_2')
+        _assert_request_called_once_with(self._mock_requests.put, url, params=params)
+
+    def test_publish_course_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.publish_course('ASDFD5100_007_2018_2',
+                is_sis_course_id=True)
+
+    def test_associate_courses_to_blueprint(self):
+        course_id = '66642'
+        course_ids = ['66649', '66650', '66651', '66652', '66653']
+
+        self.test_client.associate_courses_to_blueprint(
+            course_id,
+            course_ids)
+
+        url = (
+            "https://foo.cc.columbia.edu/api/v1/"
+            "courses/{course_id}/blueprint_templates/"
+            "default/update_associations").format(course_id=course_id)
+        data = {
+            'course_ids_to_add[]': course_ids
+        }
+
+        _assert_request_called_once_with(
+            self._mock_requests.put,
+            url,
+            params={},
+            data=data)
+
+    def test_associate_courses_to_blueprint_error(self):
+        self._mock_requests.put.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.associate_courses_to_blueprint(
+                'null',
+                [])
+
+    def test_get_account_blueprint_courses(self):
+        account_id = '115'
+
+        self.test_client.get_account_blueprint_courses(account_id)
+
+        url = (
+            "https://foo.cc.columbia.edu/api/v1/"
+            "accounts/{account_id}/courses").format(account_id=account_id)
+        params = {
+            'blueprint': 'true',
+            'include[]': ['subaccount', 'term']
+        }
+
+        _assert_request_called_once_with(
+            self._mock_requests.get,
+            url,
+            params=params)
+
+    def test_get_account_blueprint_courses_error(self):
+        self._mock_requests.get.side_effect = HTTPError
+        with self.assertRaises(HTTPError):
+            self.test_client.get_account_blueprint_courses('null')
+
 
 class TestCanvasAPIv1ClientParams(TestCase):
 
@@ -265,4 +383,3 @@ class TestCanvasAPIv1ClientParams(TestCase):
                 'x': 'y',
                 'per_page': 100
             })
-
