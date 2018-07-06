@@ -60,13 +60,14 @@ class TestCanvasAPIv1Client(TestCase):
                 'x': 'y'
             })
 
-        returned_response.raise_for_status.assert_called_once()
+        returned_response.raise_for_status.assert_called_once_with()
         test_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar',
                      'Authorization': 'Bearer foo_token'},
             params={
-                'x': 'y'
+                'x': 'y',
+                'per_page': 100
             })
 
     def test_get_paginated_exception(self):
