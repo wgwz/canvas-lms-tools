@@ -1,13 +1,18 @@
 from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.errors import APIPaginationException
 
-from unittest import TestCase
+from unittest import TestCase, main
 from unittest.mock import MagicMock, patch, mock_open
 
 from requests import HTTPError
 
 DEFAULT_PARAMS = {'per_page': 100}
 
+TEST_TOKEN = 'foo_token'
+TEST_HEADERS = {
+    'Authorization': 'Bearer {}'.format(TEST_TOKEN),
+    'params': DEFAULT_PARAMS
+    }
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -408,3 +413,41 @@ class TestCanvasAPIv1ClientParams(TestCase):
         url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
         _assert_request_called_once_with(self._mock_requests.get, url)
 
+
+    def test_get_paginated_50(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        mock_response_1 = get_mock_response_with_pagination(url)
+
+        mock_response_2 = MagicMock(headers={'link': url + 'page=2'})
+        mock_response_2.json.return_value = {'value': 'second response'}
+
+        self._mock_requests.get.side_effect = [
+            mock_response_1, mock_response_2
+            ]
+
+        test_client = CanvasAPIv1(
+            'https://foo.cc.columbia.edu/api/v1/',
+            TEST_TOKEN,
+            requests_lib=self._mock_requests,
+            per_page=50
+            )
+
+        generator = test_client._get_paginated(url)
+
+        next_value = next(generator)
+        assert 'value' in next_value
+        assert next_value['value'] == 'first response'
+        next_value = next(generator)
+        assert 'value' in next_value
+        assert next_value['value'] == 'second response'
+
+        print(self._mock_requests.get.mock_calls)
+
+        # there should be no additional pages to paginate, so expect an error:
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+
+if __name__ == '__main__':
+    main()
