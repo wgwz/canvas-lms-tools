@@ -151,11 +151,8 @@ class CanvasAPIv1(CanvasAPIClient):
                 response.links['next']['url'], headers=headers)
             yield response.json()
 
-    def _format_sis_course_id(
-        self,
-        course_id: str,
-        is_sis_course_id: False
-        ):
+    def _format_sis_course_id(self, course_id: str,
+                              is_sis_course_id: Optional[bool]):
         """
         Returns request string for querying with a SIS course ID.
         """
@@ -164,11 +161,9 @@ class CanvasAPIv1(CanvasAPIClient):
 
         return course_id
 
-    def _format_sis_account_id(
-        self,
-        account_id: str,
-        is_sis_account_id: False
-        ):
+    def _format_sis_account_id(self,
+                               account_id: str,
+                               is_sis_account_id: Optional[bool] = None):
         """
         Returns request string for querying with a SIS account ID.
         """

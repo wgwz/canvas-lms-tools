@@ -123,6 +123,7 @@ class CanvasAPIClient(metaclass=ABCMeta):
     @abstractmethod
     def get_account_blueprint_courses(self,
                                       account_id: str,
+                                      is_sis_course_id: bool = False,
                                       params: RequestParams = None
                                       ) -> Response:
         """
