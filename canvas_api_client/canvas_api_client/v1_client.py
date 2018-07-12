@@ -26,7 +26,8 @@ class CanvasAPIv1(CanvasAPIClient):
                  requests_lib: Optional[Any] = requests,
                  per_page: Optional[int] = 100,
                  is_sis_course_id: Optional[bool] = False,
-                 is_sis_account_id: Optional[bool] = False
+                 is_sis_account_id: Optional[bool] = False,
+                 flatten_response: Optional[bool] = False,
                  ) -> None:
         """
         Creates a canvas API client given a base URL for the API, an optional
@@ -41,6 +42,7 @@ class CanvasAPIv1(CanvasAPIClient):
         self._per_page = per_page
         self._is_sis_course_id = is_sis_course_id
         self._is_sis_account_id = is_sis_account_id
+        self._flatten_response = flatten_response
 
     def _get_url(self, endpoint: str) -> str:
         """
@@ -151,6 +153,29 @@ class CanvasAPIv1(CanvasAPIClient):
                 response.links['next']['url'], headers=headers)
             yield response.json()
 
+    def _get_flattened(self,
+                       url: str,
+                       headers: RequestHeaders = None,
+                       params: RequestParams = None) -> Iterator[Response]:
+        """
+        Send an API call to the Canvas server with pagination.
+
+        Returns a generator of response objects.
+        """
+        response = self._get(url, headers=headers, params=params)
+        self._check_response_headers_for_pagination(response)
+
+        for item in response.json():
+            yield item
+
+        while 'next' in response.links:
+            response.update(
+                self._get(response.links['next']['url'], headers=headers)
+                )
+
+            for item in response.json():
+                yield item
+
     def _format_sis_course_id(self, course_id: str,
                               is_sis_course_id: Optional[bool]):
         """
@@ -204,6 +229,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def get_course_users(self,
                          course_id: str,
                          is_sis_course_id: Optional[bool] = None,
+                         flatten_response: Optional[bool] = None,
                          params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the
@@ -212,6 +238,7 @@ class CanvasAPIv1(CanvasAPIClient):
         https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
         course_id = self._format_sis_course_id(course_id, is_sis_course_id)
+        flatten_resonse = flatten_reponse or self._flatten_response
 
         endpoint = "courses/{}/users".format(course_id)
 
