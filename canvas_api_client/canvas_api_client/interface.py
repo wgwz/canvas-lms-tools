@@ -35,6 +35,7 @@ class CanvasAPIClient(metaclass=ABCMeta):
     def get_course_users(self,
                          course_id: str,
                          is_sis_course_id: bool = False,
+                         flatten_response: Optional[bool] = None,
                          params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course.

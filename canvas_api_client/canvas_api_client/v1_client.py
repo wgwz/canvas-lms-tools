@@ -169,8 +169,9 @@ class CanvasAPIv1(CanvasAPIClient):
             yield item
 
         while 'next' in response.links:
-            response.update(
-                self._get(response.links['next']['url'], headers=headers)
+            response = self._get(
+                response.links['next']['url'],
+                headers=headers
                 )
 
             for item in response.json():
@@ -238,9 +239,11 @@ class CanvasAPIv1(CanvasAPIClient):
         https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
         course_id = self._format_sis_course_id(course_id, is_sis_course_id)
-        flatten_resonse = flatten_reponse or self._flatten_response
-
         endpoint = "courses/{}/users".format(course_id)
+
+        flatten_response = flatten_response or self._flatten_response
+        if flatten_response:
+            return self._get_flattened(self._get_url(endpoint), params=params)
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 

@@ -14,6 +14,13 @@ TEST_HEADERS = {
     'params': DEFAULT_PARAMS
     }
 
+TEST_LIST = [
+    'item 0',
+    'item 1',
+    'item 2',
+    'item 3'
+    ]
+
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
         headers={'link': url + 'page=1'},
@@ -23,6 +30,18 @@ def get_mock_response_with_pagination(url):
             }
         })
     mock_response.json.return_value = {'value': 'first response'}
+    return mock_response
+
+
+def get_mock_response_array_with_pagination(url):
+    mock_response = MagicMock(
+        headers={'link': url + 'page=1'},
+        links={
+            'next': {
+                'url': url + 'page=2'
+            }
+        })
+    mock_response.json.return_value = TEST_LIST[0:2]
     return mock_response
 
 
@@ -126,6 +145,40 @@ class TestCanvasAPIv1Client(TestCase):
         assert next_value['value'] == 'second response'
 
         # there should be no additional pages to paginate, so expect an error:
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_get_flattened_exception(self):
+        mock_response = MagicMock()
+        mock_response.headers = {}
+        mock_response.json.return_value == {}
+
+        self._mock_requests.get.return_value = mock_response
+
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        with self.assertRaises(APIPaginationException):
+            next(self.test_client._get_flattened(url))
+
+    def test_get_flattened(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        mock_response_1 = get_mock_response_array_with_pagination(url)
+
+        mock_response_2 = MagicMock(headers={'link': url + 'page=2'})
+        mock_response_2.json.return_value = TEST_LIST[2:4]
+
+        self._mock_requests.get.side_effect = [
+            mock_response_1, mock_response_2
+            ]
+
+        generator = self.test_client._get_flattened(url)
+
+        for idx, target_item in enumerate(TEST_LIST, start=0):
+            next_value = next(generator)
+            self.assertEqual(next_value, TEST_LIST[idx])
+
+        # there should be no additional items, so expect an error:
         with self.assertRaises(StopIteration):
             next(generator)
 
