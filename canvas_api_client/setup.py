@@ -19,8 +19,8 @@ setup(
     version=__version__,
     description='This is a library for making requests to a Canvas LMS API.',
     long_description=long_description,
-    url='https://github.com/lcary/canvas-lms-tools',
-    download_url='https://github.com/lcary/canvas-lms-tools/archive/' +
+    url='https://github.com/wgwz/canvas-lms-tools',
+    download_url='https://github.com/wgwz/canvas-lms-tools/archive/' +
     __version__,
     license='Apache',
     classifiers=[

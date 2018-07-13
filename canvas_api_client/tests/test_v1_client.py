@@ -238,6 +238,23 @@ class TestCanvasAPIv1Client(TestCase):
         next(generator)
         _assert_request_called_once_with(self._mock_requests.get, url)
 
+    @patch('canvas_api_client.v1_client.CanvasAPIv1._get_flattened')
+    def test_get_sis_course_users_flattened(self, mock_get_flattened):
+        course = 'ASDFD5100_007_2018_1'
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:{}/users'.format(
+            course)
+
+        mock_response_1 = get_mock_response_with_pagination(url)
+        self._mock_requests.get.return_value = mock_response_1
+
+        mock_get_flattened.return_value = iter(['item 1', 'item 2', 'item 3'])
+
+        generator = self.test_client.get_course_users(
+            course, is_sis_course_id=True, flatten_response=True)
+        next(generator)
+
+        mock_get_flattened.assert_called_once_with(url, params=None)
+
     def test_delete_enrollment(self):
         self.test_client.delete_enrollment(1234, 432432)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
