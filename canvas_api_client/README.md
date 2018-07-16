@@ -132,18 +132,18 @@ The `CanvasAPIv1` client object can also be called with any of the
 following optional requirements.  They can be overridden by arguments
 to the individual methods.
 
-* *per_page*: passed to the Canvas API in requests that receive
+* **per_page**: passed to the Canvas API in requests that receive
    paginated responses.  Sets the page size; the default is 100, the
    largest size respected by the Canvas API.
 
-* *flatten_response*: If the Canvas API returns a paginated response,
+* **flatten_response**: If the Canvas API returns a paginated response,
    return the results as a simple list.
 
-* *is_sis_course_id*: Prepend 'sis_course_id' to the course ID
+* **is_sis_course_id**: Prepend 'sis_course_id' to the course ID
    argument when passing it to the Canvas API.  This allows you to use
    your SIS course IDs instead of Canvas serial numbers.
 
-* *is_sis_account_id*: Prepend 'sis_account_id' to the account ID
+* **is_sis_account_id**: Prepend 'sis_account_id' to the account ID
    argument when passing it to the Canvas API.  This allows you to use
    your SIS account IDs instead of Canvas serial numbers.
 
