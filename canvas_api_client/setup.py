@@ -31,7 +31,7 @@ setup(
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
-    author='Luc Cary',
+    author='Luc Cary, Kyle Lawlor and Angus Grieve-Smith',
     install_requires=all_requirements,
     dependency_links=all_requirements,
-    author_email='luc.cary@gmail.com')
+    author_email='kl3020@columbia.edu')

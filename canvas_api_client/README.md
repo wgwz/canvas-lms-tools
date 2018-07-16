@@ -48,7 +48,7 @@ Documentation
 -------------
 
 This project has Sphinx documentation at the following url:  
-https://lcary.github.io/canvas-lms-tools/
+https://wgwz.github.io/canvas-lms-tools/
 
 The public Canvas LMS API documentation is also very useful:  
 https://canvas.instructure.com/doc/api/index.html
@@ -127,6 +127,25 @@ should likely be defined in a configuration file, and should be the full API
 URL without the endpoint, e.g. `https://canvas.com/api/v1/`. The `api_token`
 should similarly be defined in a config file, and is the token generated in
 the Canvas settings page.
+
+The `CanvasAPIv1` client object can also be called with any of the
+following optional requirements.  They can be overridden by arguments
+to the individual methods.
+
+* *per_page*: passed to the Canvas API in requests that receive
+   paginated responses.  Sets the page size; the default is 100, the
+   largest size respected by the Canvas API.
+
+* *flatten_response*: If the Canvas API returns a paginated response,
+   return the results as a simple list.
+
+* *is_sis_course_id*: Prepend 'sis_course_id' to the course ID
+   argument when passing it to the Canvas API.  This allows you to use
+   your SIS course IDs instead of Canvas serial numbers.
+
+* *is_sis_account_id*: Prepend 'sis_account_id' to the account ID
+   argument when passing it to the Canvas API.  This allows you to use
+   your SIS account IDs instead of Canvas serial numbers.
 
 There are a few helper functions that assist in sharing code between methods
 in `CanvasAPIv1` which are worth pointing out. For example, there is a method
