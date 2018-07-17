@@ -6,7 +6,8 @@ from urllib.parse import urljoin
 
 from evalkit_api_client.errors import APIPaginationException
 from evalkit_api_client.interface import EvalKitAPIClient
-from evalkit_api_client.types import RequestHeaders, RequestParams
+from evalkit_api_client.types import (
+        PaginatedResponse, RequestHeaders, RequestParams)
 
 logger = logging.getLogger()
 
@@ -131,9 +132,6 @@ class EvalKitAPIv1(EvalKitAPIClient):
         Send an API call to the evalkit server with pagination.
 
         Returns a generator of dictionary objects.
-
-        TODO: Evalkit's pagination is broken, but this logic works the way
-        the Evalkit docs say it should.
         """
         if params is None:
             params = {}
@@ -156,23 +154,19 @@ class EvalKitAPIv1(EvalKitAPIClient):
 
     def get_projects(self,
                     params: RequestParams = None
-                    ) -> Response:
+                    ) -> PaginatedResponse:
         """
         Get the projects for a given account.
-
-        TODO: use pagination when available.
         """
         endpoint = "projects"
-        return self._get(self._get_url(endpoint))
+        return self._get_paginated(self._get_url(endpoint))
 
     def get_non_responders(self,
                           project_id: str,
                           params: RequestParams = None
-                          ) -> Response:
+                          ) -> PaginatedResponse:
         """
         Get the non-respondents for a given project.
-
-        TODO: use pagination when available.
         """
         endpoint = "projects/{}/nonRespondents".format(project_id)
-        return self._get(self._get_url(endpoint))
+        return self._get_paginated(self._get_url(endpoint))
