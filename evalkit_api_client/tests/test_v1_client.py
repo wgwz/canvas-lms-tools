@@ -32,7 +32,7 @@ class TestEvalKitAPIv1Client(TestCase):
                 'x': 'y'
             })
 
-        mock_response.raise_for_status.assert_called_once()
+        mock_response.raise_for_status.assert_called_once_with()
         mock_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar', 'AuthToken': 'foo_token'},
@@ -55,7 +55,7 @@ class TestEvalKitAPIv1Client(TestCase):
                     'x': 'y'
                 })
 
-        mock_response.raise_for_status.assert_called_once()
+        mock_response.raise_for_status.assert_called_once_with()
 
     def test_get_paginated_exception(self):
         self.client._get = MagicMock()
