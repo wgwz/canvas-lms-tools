@@ -1,11 +1,25 @@
 from canvas_api_client.v1_client import CanvasAPIv1
 from canvas_api_client.errors import APIPaginationException
 
-from unittest import TestCase
+from unittest import TestCase, main
 from unittest.mock import MagicMock, patch, mock_open
 
 from requests import HTTPError
 
+DEFAULT_PARAMS = {'per_page': 100}
+
+TEST_TOKEN = 'foo_token'
+TEST_HEADERS = {
+    'Authorization': 'Bearer {}'.format(TEST_TOKEN),
+    'params': DEFAULT_PARAMS
+    }
+
+TEST_LIST = [
+    'item 0',
+    'item 1',
+    'item 2',
+    'item 3'
+    ]
 
 def get_mock_response_with_pagination(url):
     mock_response = MagicMock(
@@ -19,12 +33,26 @@ def get_mock_response_with_pagination(url):
     return mock_response
 
 
+def get_mock_response_array_with_pagination(url):
+    mock_response = MagicMock(
+        headers={'link': url + 'page=1'},
+        links={
+            'next': {
+                'url': url + 'page=2'
+            }
+        })
+    mock_response.json.return_value = TEST_LIST[0:2]
+    return mock_response
+
+
 def _assert_request_called_once_with(mock_request_object, url, params=None, **kwargs):
     """
     Execute assert_called_once_with() on a unittest.mock object with default logic.
     """
     if params is None:
         params = {}
+
+    params.update(DEFAULT_PARAMS)
     mock_request_object.assert_called_once_with(
         url, params=params, headers={
             'Authorization': 'Bearer foo_token'
@@ -56,13 +84,15 @@ class TestCanvasAPIv1Client(TestCase):
                 'x': 'y'
             })
 
-        self.assertTrue(returned_response.raise_for_status.called)
+        returned_response.raise_for_status.assert_called_once_with()
+
         test_callback.assert_called_once_with(
             url,
             headers={'foo': 'bar',
                      'Authorization': 'Bearer foo_token'},
             params={
-                'x': 'y'
+                'x': 'y',
+                'per_page': 100
             })
 
     @patch('canvas_api_client.v1_client.logger')
@@ -115,6 +145,40 @@ class TestCanvasAPIv1Client(TestCase):
         assert next_value['value'] == 'second response'
 
         # there should be no additional pages to paginate, so expect an error:
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+    def test_get_flattened_exception(self):
+        mock_response = MagicMock()
+        mock_response.headers = {}
+        mock_response.json.return_value == {}
+
+        self._mock_requests.get.return_value = mock_response
+
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        with self.assertRaises(APIPaginationException):
+            next(self.test_client._get_flattened(url))
+
+    def test_get_flattened(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        mock_response_1 = get_mock_response_array_with_pagination(url)
+
+        mock_response_2 = MagicMock(headers={'link': url + 'page=2'})
+        mock_response_2.json.return_value = TEST_LIST[2:4]
+
+        self._mock_requests.get.side_effect = [
+            mock_response_1, mock_response_2
+            ]
+
+        generator = self.test_client._get_flattened(url)
+
+        for idx, target_item in enumerate(TEST_LIST, start=0):
+            next_value = next(generator)
+            self.assertEqual(next_value, TEST_LIST[idx])
+
+        # there should be no additional items, so expect an error:
         with self.assertRaises(StopIteration):
             next(generator)
 
@@ -174,6 +238,23 @@ class TestCanvasAPIv1Client(TestCase):
         next(generator)
         _assert_request_called_once_with(self._mock_requests.get, url)
 
+    @patch('canvas_api_client.v1_client.CanvasAPIv1._get_flattened')
+    def test_get_sis_course_users_flattened(self, mock_get_flattened):
+        course = 'ASDFD5100_007_2018_1'
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/sis_course_id:{}/users'.format(
+            course)
+
+        mock_response_1 = get_mock_response_with_pagination(url)
+        self._mock_requests.get.return_value = mock_response_1
+
+        mock_get_flattened.return_value = iter(['item 1', 'item 2', 'item 3'])
+
+        generator = self.test_client.get_course_users(
+            course, is_sis_course_id=True, flatten_response=True)
+        next(generator)
+
+        mock_get_flattened.assert_called_once_with(url, params=None)
+
     def test_delete_enrollment(self):
         self.test_client.delete_enrollment(1234, 432432)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
@@ -192,6 +273,7 @@ class TestCanvasAPIv1Client(TestCase):
         params = {'task': 'delete'}
         self.test_client.delete_enrollment(1234, 432432, params=params)
         url = 'https://foo.cc.columbia.edu/api/v1/courses/1234/enrollments/432432'
+        params.update(DEFAULT_PARAMS)
         _assert_request_called_once_with(
             self._mock_requests.delete, url, params=params)
 
@@ -225,7 +307,7 @@ class TestCanvasAPIv1Client(TestCase):
         _assert_request_called_once_with(
             self._mock_requests.put,
             url,
-            params={},
+            params=DEFAULT_PARAMS,
             data=data
             )
 
@@ -237,7 +319,11 @@ class TestCanvasAPIv1Client(TestCase):
             with open('foo.csv', 'rb') as f:
                 files = {'attachment': f}
                 _assert_request_called_once_with(
-                    self._mock_requests.post, url, params=None, files=files)
+                    self._mock_requests.post,
+                    url,
+                    params=DEFAULT_PARAMS,
+                    files=files
+                    )
 
     def test_import_sis_data_file_not_found(self):
         m = mock_open()
@@ -306,7 +392,7 @@ class TestCanvasAPIv1Client(TestCase):
         _assert_request_called_once_with(
             self._mock_requests.put,
             url,
-            params={},
+            params=DEFAULT_PARAMS,
             data=data)
 
     def test_associate_courses_to_blueprint_error(self):
@@ -334,7 +420,126 @@ class TestCanvasAPIv1Client(TestCase):
             url,
             params=params)
 
+    def test_get_account_blueprint_courses_sis(self):
+        account_id = 'WHEE|OOOO'
+
+        self.test_client.get_account_blueprint_courses(
+            account_id,
+            is_sis_account_id=True
+            )
+
+        url = (
+            "https://foo.cc.columbia.edu/api/v1/"
+            "accounts/sis_account_id:{account_id}/courses"
+            ).format(account_id=account_id)
+        params = {
+            'blueprint': 'true',
+            'include[]': ['subaccount', 'term']
+        }
+
+        _assert_request_called_once_with(
+            self._mock_requests.get,
+            url,
+            params=params)
+
     def test_get_account_blueprint_courses_error(self):
         self._mock_requests.get.side_effect = HTTPError
         with self.assertRaises(HTTPError):
             self.test_client.get_account_blueprint_courses('null')
+
+
+class TestCanvasAPIv1ClientParams(TestCase):
+
+    def setUp(self,):
+        self._mock_requests = MagicMock()
+
+    def test_put_page_is_sis_course_id(self):
+        course = 'ASDFD5100_007_2018_2'
+        url = 'test_page'
+        title = 'Test Title'
+        body = '<html><body><h1>Test Title</h1><p>Foo</p></body></html>'
+        data = {
+            'wiki_page[url]': url,
+            'wiki_page[published]': True,
+            'wiki_page[notify_of_update]': False,
+            'wiki_page[title]': title,
+            'wiki_page[front_page]': False,
+            'wiki_page[body]': body
+            }
+
+        test_client = CanvasAPIv1(
+            'https://foo.cc.columbia.edu/api/v1/',
+            'foo_token',
+            requests_lib=self._mock_requests,
+            is_sis_course_id=True
+            )
+
+        test_client.put_page(
+            course,
+            url=url,
+            title=title,
+            body=body
+            )
+        course_str = 'sis_course_id:{}'.format(course)
+        url = 'https://foo.cc.columbia.edu/api/v1/courses/{}/pages/{}'.format(
+            course_str,
+            url
+            )
+
+        _assert_request_called_once_with(
+            self._mock_requests.put,
+            url,
+            params=DEFAULT_PARAMS,
+            data=data
+            )
+
+    def test_get_account_roles_sis(self):
+        test_client = CanvasAPIv1(
+            'https://foo.cc.columbia.edu/api/v1/',
+            'foo_token',
+            requests_lib=self._mock_requests,
+            is_sis_account_id=True
+            )
+
+        test_client.get_account_roles('ASDF')
+        url = 'https://foo.cc.columbia.edu/api/v1/accounts/sis_account_id:ASDF/roles'
+        _assert_request_called_once_with(self._mock_requests.get, url)
+
+
+    def test_get_paginated_50(self):
+        url = 'https://foo.cc.columbia.edu/api/v1/search'
+
+        mock_response_1 = get_mock_response_with_pagination(url)
+
+        mock_response_2 = MagicMock(headers={'link': url + 'page=2'})
+        mock_response_2.json.return_value = {'value': 'second response'}
+
+        self._mock_requests.get.side_effect = [
+            mock_response_1, mock_response_2
+            ]
+
+        test_client = CanvasAPIv1(
+            'https://foo.cc.columbia.edu/api/v1/',
+            TEST_TOKEN,
+            requests_lib=self._mock_requests,
+            per_page=50
+            )
+
+        generator = test_client._get_paginated(url)
+
+        next_value = next(generator)
+        assert 'value' in next_value
+        assert next_value['value'] == 'first response'
+        next_value = next(generator)
+        assert 'value' in next_value
+        assert next_value['value'] == 'second response'
+
+        print(self._mock_requests.get.mock_calls)
+
+        # there should be no additional pages to paginate, so expect an error:
+        with self.assertRaises(StopIteration):
+            next(generator)
+
+
+if __name__ == '__main__':
+    main()

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.2.11'
+__version__ = '0.3.0'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -19,8 +19,8 @@ setup(
     version=__version__,
     description='This is a library for making requests to a Canvas LMS API.',
     long_description=long_description,
-    url='https://github.com/lcary/canvas-lms-tools',
-    download_url='https://github.com/lcary/canvas-lms-tools/archive/' +
+    url='https://github.com/wgwz/canvas-lms-tools',
+    download_url='https://github.com/wgwz/canvas-lms-tools/archive/' +
     __version__,
     license='Apache',
     classifiers=[
@@ -31,7 +31,7 @@ setup(
     keywords='',
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
-    author='Luc Cary',
+    author='Luc Cary, Kyle Lawlor and Angus Grieve-Smith',
     install_requires=all_requirements,
     dependency_links=all_requirements,
-    author_email='luc.cary@gmail.com')
+    author_email='kl3020@columbia.edu')

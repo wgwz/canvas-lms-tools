@@ -23,7 +23,12 @@ class CanvasAPIv1(CanvasAPIClient):
     def __init__(self,
                  api_url: str,
                  api_token: Optional[str] = None,
-                 requests_lib: Optional[Any] = requests) -> None:
+                 requests_lib: Optional[Any] = requests,
+                 per_page: Optional[int] = 100,
+                 is_sis_course_id: Optional[bool] = False,
+                 is_sis_account_id: Optional[bool] = False,
+                 flatten_response: Optional[bool] = False,
+                 ) -> None:
         """
         Creates a canvas API client given a base URL for the API, an optional
         API token, and an optional requests library.
@@ -34,6 +39,10 @@ class CanvasAPIv1(CanvasAPIClient):
         self._api_url = api_url
         self._api_token = api_token
         self._requests_lib = requests_lib
+        self._per_page = per_page
+        self._is_sis_course_id = is_sis_course_id
+        self._is_sis_account_id = is_sis_account_id
+        self._flatten_response = flatten_response
 
     def _get_url(self, endpoint: str) -> str:
         """
@@ -70,6 +79,9 @@ class CanvasAPIv1(CanvasAPIClient):
             headers = {}
         if params is None:
             params = {}
+
+        if 'per_page' not in params:
+            params['per_page'] = self._per_page
 
         if self._api_token is not None:
             self._add_bearer_token(headers)
@@ -141,17 +153,50 @@ class CanvasAPIv1(CanvasAPIClient):
                 response.links['next']['url'], headers=headers)
             yield response.json()
 
-    def _format_sis_course_id(self, course_id: str):
+    def _get_flattened(self,
+                       url: str,
+                       headers: RequestHeaders = None,
+                       params: RequestParams = None) -> Iterator[Response]:
+        """
+        Send an API call to the Canvas server with pagination.
+
+        Returns a generator of response objects.
+        """
+        response = self._get(url, headers=headers, params=params)
+        self._check_response_headers_for_pagination(response)
+
+        for item in response.json():
+            yield item
+
+        while 'next' in response.links:
+            response = self._get(
+                response.links['next']['url'],
+                headers=headers
+                )
+
+            for item in response.json():
+                yield item
+
+    def _format_sis_course_id(self, course_id: str,
+                              is_sis_course_id: Optional[bool]):
         """
         Returns request string for querying with a SIS course ID.
         """
-        return "sis_course_id:{}".format(course_id)
+        if is_sis_course_id or self._is_sis_course_id:
+            return "sis_course_id:{}".format(course_id)
 
-    def _format_sis_account_id(self, account_id: str):
+        return course_id
+
+    def _format_sis_account_id(self,
+                               account_id: str,
+                               is_sis_account_id: Optional[bool] = None):
         """
         Returns request string for querying with a SIS account ID.
         """
-        return "sis_account_id:{}".format(account_id)
+        if is_sis_account_id or self._is_sis_account_id:
+            return "sis_account_id:{}".format(account_id)
+
+        return account_id
 
     def get_account_courses(self,
                             account_id: str,
@@ -169,15 +214,14 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_course_info(self,
                         course_id: str,
-                        is_sis_course_id: bool = False,
+                        is_sis_course_id: Optional[bool] = None,
                         params: RequestParams = None) -> Response:
         """
         Get the course information for a given course.
 
         https://canvas.instructure.com/doc/api/courses.html#method.courses.show
         """
-        if is_sis_course_id:
-            course_id = self._format_sis_course_id(course_id)
+        course_id = self._format_sis_course_id(course_id, is_sis_course_id)
 
         endpoint = "courses/{}".format(course_id)
 
@@ -185,7 +229,8 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_course_users(self,
                          course_id: str,
-                         is_sis_course_id: bool = False,
+                         is_sis_course_id: Optional[bool] = None,
+                         flatten_response: Optional[bool] = None,
                          params: RequestParams = None) -> Iterator[Response]:
         """
         Returns a generator of course enrollments for a given course from the
@@ -193,17 +238,18 @@ class CanvasAPIv1(CanvasAPIClient):
 
         https://canvas.instructure.com/doc/api/courses.html#method.courses.users
         """
-        if is_sis_course_id:
-            course_id = self._format_sis_course_id(course_id)
-
+        course_id = self._format_sis_course_id(course_id, is_sis_course_id)
         endpoint = "courses/{}/users".format(course_id)
+
+        if flatten_response or self._flatten_response:
+            return self._get_flattened(self._get_url(endpoint), params=params)
 
         return self._get_paginated(self._get_url(endpoint), params=params)
 
     def put_page(self,
                  course_id: str,
                  body: str,
-                 is_sis_course_id: bool = False,
+                 is_sis_course_id: Optional[bool] = None,
                  url: Optional[str] = None,
                  title: Optional[str] = None,
                  notify_of_update: Optional[bool] = False,
@@ -215,8 +261,7 @@ class CanvasAPIv1(CanvasAPIClient):
         https://canvas.instructure.com/doc/api/pages.html#method.wiki_pages_api.create
         Editing roles is not yet supported
         """
-        if is_sis_course_id:
-            course_id = self._format_sis_course_id(course_id)
+        course_id = self._format_sis_course_id(course_id, is_sis_course_id)
 
         endpoint = "courses/{course_id}/pages/{url}".format(
             course_id=course_id,
@@ -236,7 +281,7 @@ class CanvasAPIv1(CanvasAPIClient):
     def delete_enrollment(self,
                           course_id: str,
                           enrollment_id: str,
-                          is_sis_course_id: bool = False,
+                          is_sis_course_id: Optional[bool] = None,
                           params: RequestParams = None) -> Response:
         """
         Deletes an enrollment for a given course from the v1 API. Use with
@@ -244,8 +289,7 @@ class CanvasAPIv1(CanvasAPIClient):
 
         https://canvas.instructure.com/doc/api/enrollments.html#method.enrollments_api.destroy
         """
-        if is_sis_course_id:
-            course_id = self._format_sis_course_id(course_id)
+        course_id = self._format_sis_course_id(course_id, is_sis_course_id)
 
         endpoint = "courses/{course_id}/enrollments/{id}".format(
             course_id=course_id, id=enrollment_id)
@@ -285,29 +329,27 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_account_roles(self,
                           account_id: str,
-                          is_sis_account_id: bool = False,
+                          is_sis_account_id: Optional[bool] = None,
                           params: RequestParams = None) -> Response:
         """
         Get the roles for an existing account.
 
         https://canvas.instructure.com/doc/api/roles.html#method.role_overrides.api_index
         """
-        if is_sis_account_id:
-            account_id = self._format_sis_account_id(account_id)
+        account_id = self._format_sis_account_id(account_id, is_sis_account_id)
         endpoint = 'accounts/{}/roles'.format(account_id)
         return self._get(self._get_url(endpoint), params=params)
 
     def update_course(self,
                       course_id: str,
-                      is_sis_course_id: bool = False,
+                      is_sis_course_id: Optional[bool] = None,
                       params: RequestParams = None) -> Response:
         """
         Updates a given course.
 
         https://canvas.instructure.com/doc/api/courses.html#method.courses.update
         """
-        if is_sis_course_id:
-            course_id = self._format_sis_course_id(course_id)
+        course_id = self._format_sis_course_id(course_id, is_sis_course_id)
         endpoint = 'courses/{}'.format(course_id)
         return self._put(self._get_url(endpoint), params=params)
 
@@ -347,12 +389,14 @@ class CanvasAPIv1(CanvasAPIClient):
 
     def get_account_blueprint_courses(self,
                                       account_id: str,
+                                      is_sis_account_id: Optional[bool] = None,
                                       params: RequestParams = None
                                       ) -> Response:
         """Get all the blueprint courses in a given account
 
         https://canvas.instructure.com/doc/api/accounts.html#method.accounts.courses_api
         """
+        account_id = self._format_sis_account_id(account_id, is_sis_account_id)
         endpoint = "accounts/{account_id}/courses".format(
             account_id=account_id)
         if params is None:
