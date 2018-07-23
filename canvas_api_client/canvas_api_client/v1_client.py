@@ -241,8 +241,7 @@ class CanvasAPIv1(CanvasAPIClient):
         course_id = self._format_sis_course_id(course_id, is_sis_course_id)
         endpoint = "courses/{}/users".format(course_id)
 
-        flatten_response = flatten_response or self._flatten_response
-        if flatten_response:
+        if flatten_response or self._flatten_response:
             return self._get_flattened(self._get_url(endpoint), params=params)
 
         return self._get_paginated(self._get_url(endpoint), params=params)
